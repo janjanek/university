@@ -2,6 +2,7 @@ package com.university.bibliotheca.service;
 
 import com.university.bibliotheca.adapter.mongo.MongoReservationQueueAdapter;
 import com.university.bibliotheca.domain.model.Book;
+import com.university.bibliotheca.domain.model.BorrowResult;
 import com.university.bibliotheca.domain.model.Reservation;
 import com.university.bibliotheca.domain.model.ReservationQueue;
 import com.university.bibliotheca.domain.model.User;
@@ -108,8 +109,3 @@ public class ReservationService {
     }
 }
 
- enum BorrowResult{
-    BORROWED,
-    ALREADY_RESERVED,
-    RESERVED;
-}

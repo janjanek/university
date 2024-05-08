@@ -24,14 +24,14 @@ public class MongoUserAdapter {
         userRepository.save(mongoUser);
     }
 
-    public User findUser(String id) {//TODO: Obsluga nullowalnosci
+    public User findUser(String id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException(id))
                 .toDomain();
 
     }
 
-    public UserDto findUserDto(String id) {//TODO: Obsluga nullowalnosci
+    public UserDto findUserDto(String id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException(id))
                 .toDomain().toDto();

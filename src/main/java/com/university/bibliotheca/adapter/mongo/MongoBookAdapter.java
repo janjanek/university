@@ -2,7 +2,6 @@ package com.university.bibliotheca.adapter.mongo;
 
 import com.university.bibliotheca.adapter.BookDto;
 import com.university.bibliotheca.adapter.mongo.exception.BookNotFoundException;
-import com.university.bibliotheca.adapter.mongo.exception.UserNotFoundException;
 import com.university.bibliotheca.domain.model.Book;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,10 +12,10 @@ import org.springframework.stereotype.Component;
 @Component
 public class MongoBookAdapter {
 
-    private MongoBookRepository bookRepository;
+    private BookRepository bookRepository;
 
     @Autowired
-    public MongoBookAdapter(MongoBookRepository bookRepository){
+    public MongoBookAdapter(BookRepository bookRepository){
         this.bookRepository = bookRepository;
     }
 
@@ -40,7 +39,4 @@ public class MongoBookAdapter {
         return true;
     }
 
-    public void testSaveBook(){
-        bookRepository.save(new MongoBook("1", "Nazwa", "Autor"));
-    }
 }

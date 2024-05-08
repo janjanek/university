@@ -27,10 +27,4 @@ public class BookController {
        return new BookRequest(bookService.findBookDto(id));
     }
 
-
-    @RequestMapping(path = "/testAdd")
-    public void testAddBook() {
-        bookService.testSaveBook();
-        System.out.println("Udało się");
-    }
 }

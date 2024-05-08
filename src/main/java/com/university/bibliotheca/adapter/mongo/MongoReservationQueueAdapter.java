@@ -22,26 +22,26 @@ public class MongoReservationQueueAdapter {
     }
 
     @Nullable
-    public ReservationQueue findQueue(String bookName) {
+    public ReservationQueue findQueue(String bookName) {//TODO: Implement orElseThrow
         if (reservationQueueRepository.findById(bookName).isPresent()) {
             return reservationQueueRepository
                     .findById(bookName).get().toDomain();
         } else {
-            log.info("Find reservation not found by id: " + bookName);
+            log.info("[MongoReservationQueueAdapter] queue not found by bookName: " + bookName);
             return null;
         }
     }
 
     @Nullable
-    public Reservation findReservation(String id, String userId) {
-        if (reservationQueueRepository.findById(id).isPresent()) {
-            return reservationQueueRepository.findById(id).get().toDomain().getUserReservations()
+    public Reservation findReservation(String bookName, String userId) {
+        if (reservationQueueRepository.findById(bookName).isPresent()) {
+            return reservationQueueRepository.findById(bookName).get().toDomain().getUserReservations()
                     .stream()
                     .filter(reservation -> userId.equals(reservation.getUserId()))
                     .findAny()
                     .orElse(null);
         } else {
-            log.info("Find reservation not found by id: " + id);
+            log.info("[MongoReservationQueueAdapter] queue not found by bookName: " + bookName);
             return null;
         }
     }

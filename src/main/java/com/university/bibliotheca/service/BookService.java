@@ -33,7 +33,7 @@ public class BookService {
       return mongoBookAdapter.isBookAvailable(name);
     }
 
-    public List<Book> findBooksByName(String name){
+    public List<Book> findBooksByName(String name){//TODO: Implement method
         return Collections.emptyList();
     }
 
@@ -47,7 +47,4 @@ public class BookService {
         saveBook(changedStatusBook);
     }
 
-    public void testSaveBook(){
-        mongoBookAdapter.testSaveBook();
-    }
 }
