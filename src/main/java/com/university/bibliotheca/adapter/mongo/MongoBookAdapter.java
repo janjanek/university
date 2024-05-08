@@ -1,10 +1,15 @@
 package com.university.bibliotheca.adapter.mongo;
 
 import com.university.bibliotheca.adapter.BookDto;
+import com.university.bibliotheca.adapter.mongo.exception.BookNotFoundException;
+import com.university.bibliotheca.adapter.mongo.exception.UserNotFoundException;
 import com.university.bibliotheca.domain.model.Book;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 
+@Log4j2
 @Component
 public class MongoBookAdapter {
 
@@ -24,11 +29,15 @@ public class MongoBookAdapter {
         bookRepository.save(mongoBook);
     }
 
+    @Nullable
     public Book findBook(String id){
-        if(bookRepository.findById(id).isPresent()) {
-            return bookRepository.findById(id).get().toDomain();
-        }
-        else return null;
+        return bookRepository.findById(id)
+                .orElseThrow(() -> new BookNotFoundException(id))
+                .toDomain();
+    }
+
+    public boolean isBookAvailable(String name){
+        return true;
     }
 
     public void testSaveBook(){

@@ -1,10 +1,11 @@
 package com.university.bibliotheca.adapter.mongo;
 
-import com.university.bibliotheca.domain.model.Book;
 import com.university.bibliotheca.domain.model.Occupation;
 import com.university.bibliotheca.domain.model.User;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+
+import static java.util.Collections.emptyList;
 
 @Document(collection = "Users")
 public class MongoUser {
@@ -20,6 +21,6 @@ public class MongoUser {
     }
 
     public User toDomain(){
-        return new User(this.id, this.name, this.occupation);
+        return new User(this.id, this.name, this.occupation, emptyList(), emptyList());
     }
 }

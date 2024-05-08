@@ -5,6 +5,8 @@ import com.university.bibliotheca.adapter.UserDto;
 import com.university.bibliotheca.domain.model.Occupation;
 import com.university.bibliotheca.domain.model.User;
 
+import static java.util.Collections.emptyList;
+
 public class UserRequest {
     @JsonProperty(value = "id")
     private String id;
@@ -27,6 +29,6 @@ public class UserRequest {
     }
 
     public User toDomain(){
-        return new User(this.id, this.name, this.occupation);
+        return new User(this.id, this.name, this.occupation, emptyList(), emptyList());
     }
 }

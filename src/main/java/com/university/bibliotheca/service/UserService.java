@@ -19,8 +19,12 @@ public class UserService {
         mongoUserAdapter.saveUser(user);
     }
 
-    public User findUser(String id){
+    public User findUser(String id){//TODO: Obslugiwac null w razie braku usera
         return mongoUserAdapter.findUser(id);
+    }
+
+    public void addReservationToUser(String userId, String bookName){
+//        mongoUserAdapter.saveUser();
     }
 
     public UserDto findUserDto(String id){
