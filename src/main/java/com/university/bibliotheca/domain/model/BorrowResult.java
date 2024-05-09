@@ -4,8 +4,9 @@ import org.springframework.http.HttpStatus;
 
 public enum BorrowResult {
     BORROWED(HttpStatus.OK),
+    RESERVED(HttpStatus.CREATED),
     ALREADY_RESERVED(HttpStatus.CONFLICT),
-    RESERVED(HttpStatus.CREATED);
+    ALREADY_BORROWED(HttpStatus.CONFLICT);
 
     private HttpStatus status;
 

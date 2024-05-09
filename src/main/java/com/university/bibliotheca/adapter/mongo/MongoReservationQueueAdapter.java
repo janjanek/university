@@ -1,6 +1,6 @@
 package com.university.bibliotheca.adapter.mongo;
 
-import com.university.bibliotheca.adapter.mongo.exception.ReservationNotFoundException;
+import com.university.bibliotheca.adapter.mongo.exception.ReservationQueueNotFoundException;
 import com.university.bibliotheca.domain.model.Reservation;
 import com.university.bibliotheca.domain.model.ReservationQueue;
 import lombok.extern.log4j.Log4j2;
@@ -32,7 +32,7 @@ public class MongoReservationQueueAdapter {
     public ReservationQueue findQueue(String bookName) {
             return reservationQueueRepository
                     .findById(bookName)
-                    .orElseThrow(() -> new ReservationNotFoundException(bookName))
+                    .orElseThrow(() -> new ReservationQueueNotFoundException(bookName))
                     .toDomain();
     }
 
@@ -55,10 +55,10 @@ public class MongoReservationQueueAdapter {
         return reservationQueueRepository.findById(bookName).isPresent();
     }
 
-    public Reservation findPriorityReservation(String bookName) {
-
-        ReservationQueue reservationQueue = findQueue(bookName);
-        List<Reservation> reservations = reservationQueue.getUserReservations();
+    public Reservation findPriorityReservation(List<Reservation> reservations) {
+//TODO: Delete
+//        ReservationQueue reservationQueue = findQueue(bookName);
+//        List<Reservation> reservations = reservationQueue.getUserReservations();
 
         //Returns Oldest Reservation
         reservations.sort((o1, o2) -> {

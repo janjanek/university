@@ -3,7 +3,6 @@ package com.university.bibliotheca.domain.model;
 import com.university.bibliotheca.adapter.BookDto;
 import lombok.Value;
 
-import java.time.Instant;
 import java.util.Date;
 
 @Value
@@ -43,9 +42,9 @@ public class Book {
         this.name = name;
         this.author = author;
         this.isBorrowed = false;
-        this.borrower = "borrower";
-        this.borrowStart = Date.from(Instant.EPOCH);
-        this.borrowEnd = Date.from(Instant.EPOCH);
+        this.borrower = null;
+        this.borrowStart = null;
+        this.borrowEnd = null;
     }
 
 

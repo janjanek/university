@@ -1,5 +1,6 @@
 package com.university.bibliotheca.adapter.controller;
 
+import com.university.bibliotheca.domain.model.BorrowResult;
 import com.university.bibliotheca.service.ReservationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -33,23 +34,25 @@ public class ReservationController {
 
     @PostMapping(path = "/add")
     public ResponseEntity<String> addReservation(@RequestParam String userId, @RequestParam String bookName) {
-        HttpStatus status = reservationService.borrowBook(userId, bookName, Date.from(Instant.now().plus(BORROW_DAYS, DAYS))).getStatus();
+        BorrowResult status = reservationService.borrowBook(userId, bookName, Date.from(Instant.now().plus(BORROW_DAYS, DAYS)));
 
-        switch(status){
-            case OK:
-                return ResponseEntity.ok("Successfully borrowed book.");
-            case CONFLICT:
-                return ResponseEntity.status(status).body("This book is already reserved by you.");
-            case CREATED:
-                return ResponseEntity.status(status).body("No books available. You've been successfully added to reservation list.");
-            default:
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Unknown error occurred");
-        }
+        return switch (status) {
+            case BORROWED -> ResponseEntity.ok("Successfully borrowed book.");
+            case ALREADY_RESERVED -> ResponseEntity.status(status.getStatus()).body("This book is already reserved by user!");
+            case RESERVED -> ResponseEntity.status(status.getStatus()).body("No books available. You've been successfully added to reservation list.");
+            case ALREADY_BORROWED -> ResponseEntity.status(status.getStatus()).body("This books is already borrowed by user!");
+            default -> ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Unknown error occurred");
+        };
     }
 
     @PostMapping(path = "return")
     public ResponseEntity<String> returnBook(@RequestParam String userId, @RequestParam String bookId){
-//        HttpStatus status = reservationService.returnBook(userId, bookId); // moze starczyc wypchniecie notFound exception
-        return null;
+        HttpStatus status = reservationService.returnBook(userId, bookId).getStatus(); // moze starczyc wypchniecie notFound exception
+        return switch (status){
+            case OK -> ResponseEntity.ok("Successfully returned book.");
+            case CREATED -> ResponseEntity.status(status).body("Successfully returned book, and gave it to next person from reservation list.");
+            case CONFLICT ->  ResponseEntity.status(status).body("Book is not owned by user.");
+            default -> ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Unknown error occurred");
+        };
     }
 }

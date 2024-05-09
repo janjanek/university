@@ -40,6 +40,7 @@ public class MongoReservationQueue {
 }
 
 class MongoReservation {
+//    @Id
     private String userId;
     private String bookName;
     private Occupation occupation;

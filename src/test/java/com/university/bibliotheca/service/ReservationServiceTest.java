@@ -138,7 +138,7 @@ public class ReservationServiceTest {
         reservationService.borrowBook(testUser.getId(), testBook.getName(), Date.from(Instant.ofEpochSecond(1800000000))); //15 January 2027 08:00:00
         reservationService.borrowBook(diffUser.getId(), testBook.getName(), Date.from(Instant.ofEpochSecond(1800000000)) );
 
-        reservationService.findPriorityReservation();
+//        reservationService.findPriorityReservation();
 
         //and
         BorrowResult borrowResult = reservationService.borrowBook(testUser.getId(), testBook.getName(), Date.from(Instant.ofEpochSecond(1800000000))); //15 January 2027 08:00:00

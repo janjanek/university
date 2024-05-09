@@ -32,6 +32,6 @@ public class BookRequest {
     }
 
     public Book toDomain() {
-        return new Book(this.id, this.author, this.name);
+        return new Book(this.id, this.name, this.author);
     }
 }

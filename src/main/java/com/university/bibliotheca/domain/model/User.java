@@ -10,8 +10,8 @@ public class User {
     String id;
     String name;
     Occupation occupation;
-    List<String> borrowedBookIds;
-    List<String> reservedBookNames;
+    List<String> borrowedBookIds; // Potrzebne do wypisania pozyczonych ksiazek uzytkownika
+    List<String> reservedBookNames; // Potrzebne do wypisania zarezerwowanych ksiazek uzytkownika
 
 //    public User(String id, String name, Occupation occupation) {
 //        this.id = id;

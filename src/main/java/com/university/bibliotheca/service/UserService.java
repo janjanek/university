@@ -2,10 +2,9 @@ package com.university.bibliotheca.service;
 
 import com.university.bibliotheca.adapter.UserDto;
 import com.university.bibliotheca.adapter.mongo.MongoUserAdapter;
-import com.university.bibliotheca.adapter.mongo.exception.BookNotFoundException;
+import com.university.bibliotheca.domain.model.User;
 import com.university.bibliotheca.service.exception.BookAlreadyBorrowedException;
 import com.university.bibliotheca.service.exception.BookAlreadyReservedException;
-import com.university.bibliotheca.domain.model.User;
 import com.university.bibliotheca.service.exception.BookNotBorrowedException;
 import com.university.bibliotheca.service.exception.BookNotReservedException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,7 +50,7 @@ public class UserService {
         User user = findUser(userId);
         List<String> borrowedBookIds = user.getBorrowedBookIds();
         if (borrowedBookIds != null) {
-            if (!borrowedBookIds.contains(bookId)) {
+            if (!borrowedBookIds.contains(bookId)) {//TODO Investigate this exception.
                 borrowedBookIds.add(bookId);
                 User updatedUser = new User(user.getId(), user.getName(), user.getOccupation(), borrowedBookIds, user.getReservedBookNames());
                 mongoUserAdapter.saveUser(updatedUser);
@@ -85,7 +84,7 @@ public class UserService {
         if (borrowedBookIds != null) {
             if (borrowedBookIds.contains(bookId)) {
                 borrowedBookIds.remove(bookId);
-                User updatedUser = new User(user.getId(), user.getName(), user.getOccupation(), borrowedBookIds, user.getBorrowedBookIds());
+                User updatedUser = new User(user.getId(), user.getName(), user.getOccupation(), borrowedBookIds, user.getReservedBookNames());
                 mongoUserAdapter.saveUser(updatedUser);
             } else {
                 throw (new BookNotBorrowedException(bookId));

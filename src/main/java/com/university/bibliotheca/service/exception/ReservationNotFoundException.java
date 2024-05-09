@@ -1,4 +1,4 @@
-package com.university.bibliotheca.adapter.mongo.exception;
+package com.university.bibliotheca.service.exception;
 
 public class ReservationNotFoundException extends RuntimeException {
     public ReservationNotFoundException(String bookName) {
