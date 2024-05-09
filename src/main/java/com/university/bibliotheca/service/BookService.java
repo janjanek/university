@@ -1,7 +1,7 @@
 package com.university.bibliotheca.service;
 
-import com.university.bibliotheca.adapter.mongo.MongoBookAdapter;
 import com.university.bibliotheca.domain.model.Book;
+import com.university.bibliotheca.domain.ports.BookPort;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -12,10 +12,10 @@ import java.util.List;
 @Component
 public class BookService {
 
-    private MongoBookAdapter mongoBookAdapter;
+    private BookPort mongoBookAdapter;
 
     @Autowired
-    public BookService(MongoBookAdapter mongoBookAdapter){
+    public BookService(BookPort mongoBookAdapter){
         this.mongoBookAdapter = mongoBookAdapter;
     }
 

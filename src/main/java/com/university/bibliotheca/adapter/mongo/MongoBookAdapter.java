@@ -3,6 +3,7 @@ package com.university.bibliotheca.adapter.mongo;
 import com.university.bibliotheca.adapter.mongo.exception.AvailableBookNotFoundException;
 import com.university.bibliotheca.adapter.mongo.exception.BookNotFoundException;
 import com.university.bibliotheca.domain.model.Book;
+import com.university.bibliotheca.domain.ports.BookPort;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -12,7 +13,7 @@ import java.util.stream.Collectors;
 
 @Log4j2
 @Component
-public class MongoBookAdapter {
+public class MongoBookAdapter implements BookPort {
 
     private BookRepository bookRepository;
 

@@ -3,11 +3,12 @@ package com.university.bibliotheca.adapter.mongo;
 import com.university.bibliotheca.adapter.UserDto;
 import com.university.bibliotheca.adapter.mongo.exception.UserNotFoundException;
 import com.university.bibliotheca.domain.model.User;
+import com.university.bibliotheca.domain.ports.UserPort;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class MongoUserAdapter {
+public class MongoUserAdapter implements UserPort {
 
     private UserRepository userRepository;
 
@@ -28,10 +29,6 @@ public class MongoUserAdapter {
         return userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException(id))
                 .toDomain();
-
-    }
-
-    public void addReservationToUser(User user, String bookId) {
 
     }
 

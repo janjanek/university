@@ -1,6 +1,5 @@
 package com.university.bibliotheca.service;
 
-import com.university.bibliotheca.adapter.mongo.MongoReservationQueueAdapter;
 import com.university.bibliotheca.adapter.mongo.exception.AvailableBookNotFoundException;
 import com.university.bibliotheca.adapter.mongo.exception.ReservationQueueNotFoundException;
 import com.university.bibliotheca.domain.model.Book;
@@ -9,6 +8,7 @@ import com.university.bibliotheca.domain.model.Reservation;
 import com.university.bibliotheca.domain.model.ReservationQueue;
 import com.university.bibliotheca.domain.model.ReturnResult;
 import com.university.bibliotheca.domain.model.User;
+import com.university.bibliotheca.domain.ports.ReservationQueuePort;
 import com.university.bibliotheca.service.exception.ReservationNotFoundException;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,13 +29,13 @@ public class ReservationService {
     private BookService bookService;
     private UserService userService;
 
-    private MongoReservationQueueAdapter mongoReservationQueueAdapter;
+    private ReservationQueuePort mongoReservationQueueAdapter;
 
     @Value("${borrow_days}")
     private int BORROW_DAYS;
 
     @Autowired
-    public ReservationService(BookService bookService, UserService userService, MongoReservationQueueAdapter mongoReservationQueueAdapter) {
+    public ReservationService(BookService bookService, UserService userService, ReservationQueuePort mongoReservationQueueAdapter) {
         this.bookService = bookService;
         this.userService = userService;
         this.mongoReservationQueueAdapter = mongoReservationQueueAdapter;
@@ -148,10 +148,15 @@ public class ReservationService {
     }
 
     private boolean isAlreadyBorrowed(String userId, String bookName) {
-        return userService.findUser(userId).getBorrowedBookIds().stream().map(bookId ->
-                bookService.findBook(bookId).getName()
-        ).collect(Collectors.toList())
-                .contains(bookName);
+        User retrievedUser = userService.findUser(userId);
+        if(retrievedUser.getBorrowedBookIds() == null){
+            return false;
+        } else {
+            return userService.findUser(userId).getBorrowedBookIds().stream().map(bookId ->
+                    bookService.findBook(bookId).getName()
+            ).collect(Collectors.toList())
+                    .contains(bookName);
+        }
     }
 
     private void saveReservationQueue(ReservationQueue reservationQueue) {

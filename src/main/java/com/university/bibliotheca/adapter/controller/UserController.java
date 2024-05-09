@@ -1,6 +1,5 @@
 package com.university.bibliotheca.adapter.controller;
 
-import com.university.bibliotheca.service.BookService;
 import com.university.bibliotheca.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;

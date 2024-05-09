@@ -6,13 +6,13 @@ import com.university.bibliotheca.builders.ReservationBuilder;
 import com.university.bibliotheca.builders.ReservationQueueBuilder;
 import com.university.bibliotheca.domain.model.Reservation;
 import com.university.bibliotheca.domain.model.ReservationQueue;
+import com.university.bibliotheca.domain.ports.ReservationQueuePort;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Objects;
@@ -25,7 +25,7 @@ public class MongoReservationQueueAdapterTest {
     @Autowired
     private ReservationQueueRepository reservationQueueRepository;
 
-    private MongoReservationQueueAdapter mongoReservationQueueAdapter;
+    private ReservationQueuePort mongoReservationQueueAdapter;
 
     @BeforeEach
     public void init() {

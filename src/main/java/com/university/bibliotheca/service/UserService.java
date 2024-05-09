@@ -1,8 +1,8 @@
 package com.university.bibliotheca.service;
 
 import com.university.bibliotheca.adapter.UserDto;
-import com.university.bibliotheca.adapter.mongo.MongoUserAdapter;
 import com.university.bibliotheca.domain.model.User;
+import com.university.bibliotheca.domain.ports.UserPort;
 import com.university.bibliotheca.service.exception.BookAlreadyBorrowedException;
 import com.university.bibliotheca.service.exception.BookAlreadyReservedException;
 import com.university.bibliotheca.service.exception.BookNotBorrowedException;
@@ -14,10 +14,10 @@ import java.util.List;
 
 @Component
 public class UserService {
-    private MongoUserAdapter mongoUserAdapter;
+    private UserPort mongoUserAdapter;
 
     @Autowired
-    public UserService(MongoUserAdapter mongoUserAdapter) {
+    public  UserService(UserPort mongoUserAdapter) {
         this.mongoUserAdapter = mongoUserAdapter;
     }
 

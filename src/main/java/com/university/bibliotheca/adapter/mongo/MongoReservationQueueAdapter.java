@@ -3,6 +3,7 @@ package com.university.bibliotheca.adapter.mongo;
 import com.university.bibliotheca.adapter.mongo.exception.ReservationQueueNotFoundException;
 import com.university.bibliotheca.domain.model.Reservation;
 import com.university.bibliotheca.domain.model.ReservationQueue;
+import com.university.bibliotheca.domain.ports.ReservationQueuePort;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -13,7 +14,7 @@ import java.util.List;
 
 @Log4j2
 @Component
-public class MongoReservationQueueAdapter {
+public class MongoReservationQueueAdapter implements ReservationQueuePort {
     private ReservationQueueRepository reservationQueueRepository;
 
     @Autowired

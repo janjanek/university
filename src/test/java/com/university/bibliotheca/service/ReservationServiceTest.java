@@ -11,6 +11,7 @@ import com.university.bibliotheca.builders.UserBuilder;
 import com.university.bibliotheca.domain.model.Book;
 import com.university.bibliotheca.domain.model.BorrowResult;
 import com.university.bibliotheca.domain.model.Occupation;
+import com.university.bibliotheca.domain.model.ReturnResult;
 import com.university.bibliotheca.domain.model.User;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -122,28 +123,69 @@ public class ReservationServiceTest {
     }
 
     @Test
-    @DisplayName("Should return status, that book is already reserved by a user")
-    public void findPriority(){
+    @DisplayName("Should return book for a user")
+    public void returnBookForUser(){
         //given
-        Book testBook = BookBuilder.buildBorrowed();
+        Book testBook = BookBuilder.build();
         User testUser = UserBuilder.build();
-
-        User diffUser = new User("another-id", "A", Occupation.STUDENT, null, null);
 
         bookService.saveBook(testBook);
         userService.saveUser(testUser);
-        userService.saveUser(diffUser);
 
         //when
         reservationService.borrowBook(testUser.getId(), testBook.getName(), Date.from(Instant.ofEpochSecond(1800000000))); //15 January 2027 08:00:00
-        reservationService.borrowBook(diffUser.getId(), testBook.getName(), Date.from(Instant.ofEpochSecond(1800000000)) );
-
-//        reservationService.findPriorityReservation();
-
         //and
-        BorrowResult borrowResult = reservationService.borrowBook(testUser.getId(), testBook.getName(), Date.from(Instant.ofEpochSecond(1800000000))); //15 January 2027 08:00:00
+        ReturnResult returnResult = reservationService.returnBook(testUser.getId(), testBook.getId());
 
         //then
-        assertEquals("nie", "ha");
+        assertEquals(ReturnResult.RETURNED, returnResult);
     }
+
+    @Test
+    @DisplayName("Should result in NOT_OWNED if user tries to return not owned book")
+    public void returnNotOwnedBookForUser(){
+        //given
+        Book testBook = BookBuilder.build();
+        User testUser = UserBuilder.build();
+        User anotherUser = new User("another-test-id", "another-test-name", Occupation.COMMON_USER, null, null );
+
+        bookService.saveBook(testBook);
+        userService.saveUser(testUser);
+        userService.saveUser(anotherUser);
+
+        reservationService.borrowBook(testUser.getId(), testBook.getName(), Date.from(Instant.ofEpochSecond(1800000000))); //15 January 2027 08:00:00
+        reservationService.borrowBook(anotherUser.getId(), testBook.getName(), Date.from(Instant.ofEpochSecond(1800000000))); //15 January 2027 08:00:00
+
+        //when
+        ReturnResult returnResult = reservationService.returnBook(testUser.getId(), testBook.getId());
+
+        //then
+        assertEquals(ReturnResult.RETURNED_AND_RESERVED, returnResult);
+    }
+//
+//    @Test
+//    @DisplayName("Should return status, that book is already reserved by a user")
+//    public void findPriority(){
+//        //given
+//        Book testBook = BookBuilder.buildBorrowed();
+//        User testUser = UserBuilder.build();
+//
+//        User diffUser = new User("another-id", "A", Occupation.STUDENT, null, null);
+//
+//        bookService.saveBook(testBook);
+//        userService.saveUser(testUser);
+//        userService.saveUser(diffUser);
+//
+//        //when
+//        reservationService.borrowBook(testUser.getId(), testBook.getName(), Date.from(Instant.ofEpochSecond(1800000000))); //15 January 2027 08:00:00
+//        reservationService.borrowBook(diffUser.getId(), testBook.getName(), Date.from(Instant.ofEpochSecond(1800000000)) );
+//
+////        reservationService.findPriorityReservation();
+//
+//        //and
+//        BorrowResult borrowResult = reservationService.borrowBook(testUser.getId(), testBook.getName(), Date.from(Instant.ofEpochSecond(1800000000))); //15 January 2027 08:00:00
+//
+//        //then
+//        assertEquals("nie", "ha");
+//    }
 }
