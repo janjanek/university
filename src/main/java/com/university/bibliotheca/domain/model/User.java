@@ -10,7 +10,7 @@ public class User {
     String id;
     String name;
     Occupation occupation;
-    List<String> borrowedBooksIds;
+    List<String> borrowedBookIds;
     List<String> reservedBookNames;
 
 //    public User(String id, String name, Occupation occupation) {

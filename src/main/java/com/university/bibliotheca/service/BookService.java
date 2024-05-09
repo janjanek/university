@@ -27,9 +27,6 @@ public class BookService {
        return mongoBookAdapter.findBook(id);
     }
 
-    public boolean isBookAvailable(String name){//TODO: Implement is book avaible by name
-      return mongoBookAdapter.isBookAvailable(name);
-    }
 
     public List<Book> findBooksByName(String name){//TODO: Implement method
         return mongoBookAdapter.findBooksByName(name);

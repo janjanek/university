@@ -17,8 +17,19 @@ public class UserBuilder {
                 id,
                 name,
                 occupation,
+                null,
+                null
+        );
+    }
+
+    public static User buildWithReservations() {
+        return new User(
+                id,
+                name,
+                occupation,
                 borrowedBooksIds,
                 reservedBookNames
         );
     }
+
 }

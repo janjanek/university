@@ -2,11 +2,12 @@ package com.university.bibliotheca.service;
 
 import com.university.bibliotheca.adapter.mongo.MongoReservationQueueAdapter;
 import com.university.bibliotheca.adapter.mongo.exception.AvailableBookNotFoundException;
-import com.university.bibliotheca.adapter.mongo.exception.BookNotFoundException;
+import com.university.bibliotheca.adapter.mongo.exception.ReservationNotFoundException;
 import com.university.bibliotheca.domain.model.Book;
 import com.university.bibliotheca.domain.model.BorrowResult;
 import com.university.bibliotheca.domain.model.Reservation;
 import com.university.bibliotheca.domain.model.ReservationQueue;
+import com.university.bibliotheca.domain.model.ReturnResult;
 import com.university.bibliotheca.domain.model.User;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +41,7 @@ public class ReservationService {
         try {
             Book bookToBorrow = bookService.findAvailableBookByName(bookName);
             bookService.changeBorrowStatus(bookToBorrow.getId(), true, userId, borrowEnd);
+            userService.addBorrowToUser(userId, bookToBorrow.getId());
             return BorrowResult.BORROWED;
         } catch (AvailableBookNotFoundException e) {
             log.info("[ReservationService] Didn't borrow book for user: " + userId + ", making reservation for book: " + bookName);
@@ -52,6 +54,25 @@ public class ReservationService {
         }
     }
 
+    public ReturnResult returnBook(String userId, String bookId) {
+        Book returnedBook = bookService.findBook(bookId);
+        bookService.changeBorrowStatus(returnedBook.getId(), false, null, null);
+        userService.removeBorrowFromUser(userId, bookId);
+
+        try {
+            findPriorityReservation();
+            //Zwrotka Returned and someone Borrowed from Reserved List
+        } catch (ReservationNotFoundException ignored){
+            //Zwrotka Returned and Not Borrowed from Reserved List
+        }
+
+        return null;
+    }
+
+    public void findPriorityReservation(){
+        mongoReservationQueueAdapter.findPriorityReservation("test-book-name");
+    }
+
     private void reserveBook(String userId, String bookName) {
         User retrievedUser = userService.findUser(userId);
         Reservation reservation = new Reservation(userId, bookName, retrievedUser.getOccupation(), Date.from(Instant.now()));
@@ -62,6 +83,7 @@ public class ReservationService {
         } else {
             saveReservationQueue(new ReservationQueue(bookName, List.of(reservation)));
         }
+        userService.addReservationToUser(retrievedUser, bookName);
     }
 
     private boolean isAlreadyReserved(String userId, String bookName) {

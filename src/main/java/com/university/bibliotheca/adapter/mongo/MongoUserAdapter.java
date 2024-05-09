@@ -20,7 +20,7 @@ public class MongoUserAdapter {
 
     public void saveUser(User user) {
         UserDto userDto = user.toDto();
-        MongoUser mongoUser = new MongoUser(userDto.getId(), userDto.getName(), userDto.getOccupation());
+        MongoUser mongoUser = new MongoUser(userDto.getId(), userDto.getName(), userDto.getOccupation(), user.getBorrowedBookIds(), user.getReservedBookNames());
         userRepository.save(mongoUser);
     }
 
@@ -28,6 +28,10 @@ public class MongoUserAdapter {
         return userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException(id))
                 .toDomain();
+
+    }
+
+    public void addReservationToUser(User user, String bookId) {
 
     }
 

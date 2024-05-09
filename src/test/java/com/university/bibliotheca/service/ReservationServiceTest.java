@@ -1,6 +1,5 @@
 package com.university.bibliotheca.service;
 
-import com.university.bibliotheca.adapter.controller.ReservationController;
 import com.university.bibliotheca.adapter.mongo.BookRepository;
 import com.university.bibliotheca.adapter.mongo.MongoBookAdapter;
 import com.university.bibliotheca.adapter.mongo.MongoReservationQueueAdapter;
@@ -11,6 +10,7 @@ import com.university.bibliotheca.builders.BookBuilder;
 import com.university.bibliotheca.builders.UserBuilder;
 import com.university.bibliotheca.domain.model.Book;
 import com.university.bibliotheca.domain.model.BorrowResult;
+import com.university.bibliotheca.domain.model.Occupation;
 import com.university.bibliotheca.domain.model.User;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -121,4 +121,29 @@ public class ReservationServiceTest {
         assertEquals(BorrowResult.ALREADY_RESERVED, borrowResult);
     }
 
+    @Test
+    @DisplayName("Should return status, that book is already reserved by a user")
+    public void findPriority(){
+        //given
+        Book testBook = BookBuilder.buildBorrowed();
+        User testUser = UserBuilder.build();
+
+        User diffUser = new User("another-id", "A", Occupation.STUDENT, null, null);
+
+        bookService.saveBook(testBook);
+        userService.saveUser(testUser);
+        userService.saveUser(diffUser);
+
+        //when
+        reservationService.borrowBook(testUser.getId(), testBook.getName(), Date.from(Instant.ofEpochSecond(1800000000))); //15 January 2027 08:00:00
+        reservationService.borrowBook(diffUser.getId(), testBook.getName(), Date.from(Instant.ofEpochSecond(1800000000)) );
+
+        reservationService.findPriorityReservation();
+
+        //and
+        BorrowResult borrowResult = reservationService.borrowBook(testUser.getId(), testBook.getName(), Date.from(Instant.ofEpochSecond(1800000000))); //15 January 2027 08:00:00
+
+        //then
+        assertEquals("nie", "ha");
+    }
 }

@@ -61,8 +61,4 @@ public class MongoBookAdapter {
         }
     }
 
-    public boolean isBookAvailable(String name) {
-        return true;
-    }
-
 }

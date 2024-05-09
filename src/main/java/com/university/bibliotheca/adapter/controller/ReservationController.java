@@ -2,6 +2,7 @@ package com.university.bibliotheca.adapter.controller;
 
 import com.university.bibliotheca.service.ReservationService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,6 +21,9 @@ public class ReservationController {
 
     private ReservationService reservationService;
 
+    @Value("${borrow_days}")
+    private int BORROW_DAYS;
+
     @Autowired
     public ReservationController(
             ReservationService reservationService
@@ -28,8 +32,8 @@ public class ReservationController {
     }
 
     @PostMapping(path = "/add")
-    public ResponseEntity<String> addReservation(@RequestParam String userName, @RequestParam String bookName) {
-        HttpStatus status = reservationService.borrowBook(userName, bookName, Date.from(Instant.now().plus(30, DAYS))).getStatus();
+    public ResponseEntity<String> addReservation(@RequestParam String userId, @RequestParam String bookName) {
+        HttpStatus status = reservationService.borrowBook(userId, bookName, Date.from(Instant.now().plus(BORROW_DAYS, DAYS))).getStatus();
 
         switch(status){
             case OK:
@@ -41,5 +45,11 @@ public class ReservationController {
             default:
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Unknown error occurred");
         }
+    }
+
+    @PostMapping(path = "return")
+    public ResponseEntity<String> returnBook(@RequestParam String userId, @RequestParam String bookId){
+//        HttpStatus status = reservationService.returnBook(userId, bookId); // moze starczyc wypchniecie notFound exception
+        return null;
     }
 }

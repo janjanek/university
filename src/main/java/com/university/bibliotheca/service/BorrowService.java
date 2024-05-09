@@ -9,12 +9,6 @@ public class BorrowService {
 
 
     public void borrowBook(User user, String name) {
-        if(bookService.isBookAvailable(name)){
-            
-
-        } else{
-
-        }
     }
 
     public void addUserToQueue(User user, String name){

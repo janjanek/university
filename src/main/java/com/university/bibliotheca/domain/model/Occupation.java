@@ -5,13 +5,13 @@ public enum Occupation {
         STUDENT(1),
         UNIVERSITY_EMPLOYEE(2);
 
-        private int numVal;
+        private Integer numVal;
 
         Occupation(int numVal) {
                 this.numVal = numVal;
         }
 
-        public int getNumVal() {
+        public Integer getNumVal() {
                 return numVal;
         }
 }
