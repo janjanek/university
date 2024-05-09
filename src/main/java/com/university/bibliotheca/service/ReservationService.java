@@ -1,6 +1,8 @@
 package com.university.bibliotheca.service;
 
 import com.university.bibliotheca.adapter.mongo.MongoReservationQueueAdapter;
+import com.university.bibliotheca.adapter.mongo.exception.AvailableBookNotFoundException;
+import com.university.bibliotheca.adapter.mongo.exception.BookNotFoundException;
 import com.university.bibliotheca.domain.model.Book;
 import com.university.bibliotheca.domain.model.BorrowResult;
 import com.university.bibliotheca.domain.model.Reservation;
@@ -30,19 +32,18 @@ public class ReservationService {
         this.mongoReservationQueueAdapter = mongoReservationQueueAdapter;
     }
 
-//1. zarezerwowanie pierwszej z brzegu książki
+    //1. zarezerwowanie pierwszej z brzegu książki
 //2. dorzucenie usera do listy rezerwowych danej książki
 //    wyciagnij z bazy ReservatoinQueue i dodaj nowa rezerwacje
 //    DONE.
     public BorrowResult borrowBook(String userId, String bookName, Date borrowEnd) {
-        List<Book> retrievedBooks = bookService.findBooksByName(bookName);
-        if (!retrievedBooks.isEmpty()) {
-            Book bookToBorrow = retrievedBooks.get(0);
-            bookService.changeBorrowStatus(bookToBorrow.getId(), true, borrowEnd);
+        try {
+            Book bookToBorrow = bookService.findAvailableBookByName(bookName);
+            bookService.changeBorrowStatus(bookToBorrow.getId(), true, userId, borrowEnd);
             return BorrowResult.BORROWED;
-        } else {
-            log.info("[ReservationService] Didn't borrow book for user: " + userId +", making reservation for book: " + bookName);
-            if(isAlreadyReserved(userId, bookName)){
+        } catch (AvailableBookNotFoundException e) {
+            log.info("[ReservationService] Didn't borrow book for user: " + userId + ", making reservation for book: " + bookName);
+            if (isAlreadyReserved(userId, bookName)) {
                 log.info("[ReservationService] Book is already reserved!");
                 return BorrowResult.ALREADY_RESERVED;
             }
@@ -51,7 +52,7 @@ public class ReservationService {
         }
     }
 
-    private void reserveBook(String userId, String bookName){
+    private void reserveBook(String userId, String bookName) {
         User retrievedUser = userService.findUser(userId);
         Reservation reservation = new Reservation(userId, bookName, retrievedUser.getOccupation(), Date.from(Instant.now()));
 
@@ -63,31 +64,10 @@ public class ReservationService {
         }
     }
 
-    private boolean isAlreadyReserved(String userId, String bookName){
+    private boolean isAlreadyReserved(String userId, String bookName) {
         Reservation retrievedReservation = mongoReservationQueueAdapter.findReservation(bookName, userId);
         return (retrievedReservation != null);
     }
-
-//    public void bookReservation(String userId, String bookName, Date borrowEnd) {
-//        List<Book> retrievedBooks = bookService.findBooksByName(bookName);
-//        if (!retrievedBooks.isEmpty()) {
-//            Book bookToBorrow = retrievedBooks.get(0);
-//            bookService.changeBorrowStatus(bookToBorrow.getId(), true, borrowEnd);
-//        } else {
-//            log.info("[ReservationService] Didn't borrow book for user: " + userId +", making reservation for book: " + bookName);
-//            User retrievedUser = userService.findUser(userId);
-//            Reservation reservation = new Reservation(userId, bookName, retrievedUser.getOccupation(), Date.from(Instant.now()));
-//
-//            if (isReservationQueuePresent(bookName)) {
-//                ReservationQueue retrievedReservationQueue = findReservationQueue(bookName);
-//                ReservationQueue modifiedReservationQueue = addReservation(retrievedReservationQueue, reservation);
-//                saveReservationQueue(modifiedReservationQueue);
-//            } else {
-//                saveReservationQueue(new ReservationQueue(bookName, List.of(reservation)));
-//            }
-//            mongoReservationQueueAdapter.saveReservationToQueue(bookName, reservation);
-//        }
-//    }
 
     private void saveReservationQueue(ReservationQueue reservationQueue) {
         mongoReservationQueueAdapter.saveReservationQueue(reservationQueue);

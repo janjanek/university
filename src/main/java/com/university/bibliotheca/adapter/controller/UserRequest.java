@@ -4,14 +4,17 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.university.bibliotheca.adapter.UserDto;
 import com.university.bibliotheca.domain.model.Occupation;
 import com.university.bibliotheca.domain.model.User;
+import org.jetbrains.annotations.NotNull;
 
 import static java.util.Collections.emptyList;
 
 public class UserRequest {
     @JsonProperty(value = "id")
     private String id;
+    @NotNull
     @JsonProperty(value = "name")
     private String name;
+    @NotNull
     @JsonProperty(value = "occupation")
     private Occupation occupation;
 

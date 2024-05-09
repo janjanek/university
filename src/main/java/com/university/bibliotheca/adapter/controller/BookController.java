@@ -24,7 +24,12 @@ public class BookController {
 
     @GetMapping(path = "/find")
     public BookRequest getBook(@RequestParam String id) {
-       return new BookRequest(bookService.findBookDto(id));
+        return new BookRequest(bookService.findBook(id).toDto());
+    }
+
+    @GetMapping(path = "/findAvailable")
+    public BookRequest getAvailableBook(@RequestParam String name) {
+       return new BookRequest(bookService.findAvailableBookByName(name));
     }
 
 }

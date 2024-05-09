@@ -12,28 +12,38 @@ public class Book {
     String name;
     String author;
 
-    String reader;
     boolean isBorrowed;
+    String borrower;
     Date borrowStart;
     Date borrowEnd;
 
 
-    public Book(String id, String name, String author, String reader, boolean isBorrowed, Date borrowStart, Date borrowEnd) {
+    public Book(String id, String name, String author, boolean isBorrowed, String borrower ,Date borrowStart, Date borrowEnd) {
         this.id = id;
         this.name = name;
         this.author = author;
-        this.reader = reader;
         this.isBorrowed = isBorrowed;
+        this.borrower = borrower;
         this.borrowStart = borrowStart;
         this.borrowEnd = borrowEnd;
+    }
+
+    public Book(String id, String name, String author, boolean isBorrowed, String borrower) {
+        this.id = id;
+        this.name = name;
+        this.author = author;
+        this.isBorrowed = isBorrowed;
+        this.borrower = borrower;
+        this.borrowStart = null;
+        this.borrowEnd = null;
     }
 
     public Book(String id,String name, String author) {
         this.id = id;
         this.name = name;
         this.author = author;
-        this.reader = "reader";
         this.isBorrowed = false;
+        this.borrower = "borrower";
         this.borrowStart = Date.from(Instant.EPOCH);
         this.borrowEnd = Date.from(Instant.EPOCH);
     }

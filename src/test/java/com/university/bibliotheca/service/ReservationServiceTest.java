@@ -1,4 +1,4 @@
-package com.university.bibliotheca.unit.adapter.controller;
+package com.university.bibliotheca.service;
 
 import com.university.bibliotheca.adapter.controller.ReservationController;
 import com.university.bibliotheca.adapter.mongo.BookRepository;
@@ -12,9 +12,6 @@ import com.university.bibliotheca.builders.UserBuilder;
 import com.university.bibliotheca.domain.model.Book;
 import com.university.bibliotheca.domain.model.BorrowResult;
 import com.university.bibliotheca.domain.model.User;
-import com.university.bibliotheca.service.BookService;
-import com.university.bibliotheca.service.ReservationService;
-import com.university.bibliotheca.service.UserService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -31,10 +28,7 @@ import static org.junit.Assert.assertEquals;
 
 @DataMongoTest
 @ExtendWith(SpringExtension.class)
-public class ReservationControllerTest {
-
-    private ReservationController reservationController;
-
+public class ReservationServiceTest {
     private ReservationService reservationService;
 
     private BookService bookService;

@@ -25,6 +25,12 @@ public class BookRequest {
         this.author = bookDto.getAuthor();
     }
 
+    public BookRequest(Book book){
+        this.id = book.getId();
+        this.name = book.getName();
+        this.author = book.getAuthor();
+    }
+
     public Book toDomain() {
         return new Book(this.id, this.author, this.name);
     }
