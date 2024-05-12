@@ -1,37 +1,68 @@
 package com.university.bibliotheca.adapter.mongo;
 
-import com.university.bibliotheca.adapter.BookDto;
+import com.university.bibliotheca.adapter.mongo.exception.BookNotFoundException;
 import com.university.bibliotheca.domain.model.Book;
+import com.university.bibliotheca.domain.ports.BookPort;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-@Component
-public class MongoBookAdapter {
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
-    private MongoBookRepository bookRepository;
+@Log4j2
+@Component
+public class MongoBookAdapter implements BookPort {
+
+    private BookRepository bookRepository;
 
     @Autowired
-    public MongoBookAdapter(MongoBookRepository bookRepository){
+    public MongoBookAdapter(BookRepository bookRepository) {
         this.bookRepository = bookRepository;
     }
 
 //    MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017");
 
 
-    public void saveBook(Book book){
-        BookDto bookDto = book.toDto();
-        MongoBook mongoBook = new MongoBook(bookDto.getId(), bookDto.getAuthor(), bookDto.getName());
+    public void saveBook(Book book) {
+        MongoBook mongoBook = new MongoBook(book.getId(), book.getName(), book.getAuthor(), book.isBorrowed(), book.getBorrower(), book.getBorrowStart(), book.getBorrowEnd());
+
         bookRepository.save(mongoBook);
     }
 
-    public Book findBook(String id){
-        if(bookRepository.findById(id).isPresent()) {
-            return bookRepository.findById(id).get().toDomain();
-        }
-        else return null;
+    public Book findBook(String id) {
+        return bookRepository.findById(id)
+                .orElseThrow(() -> new BookNotFoundException(id))
+                .toDomain();
     }
 
-    public void testSaveBook(){
-        bookRepository.save(new MongoBook("1", "Nazwa", "Autor"));
+    public List<Book> findAllBooks() {
+        return bookRepository.findAll().stream().map(mongoBook -> mongoBook.toDomain()).collect(Collectors.toList());
     }
+
+    public List<Book> findBooksByName(String name) {
+        List<MongoBook> retrievedBooks = bookRepository.findByName(name)
+                .orElseThrow(() -> new BookNotFoundException(name));
+
+        if (!retrievedBooks.isEmpty()) {
+            return retrievedBooks.stream()
+                    .map(MongoBook::toDomain)
+                    .collect(Collectors.toList());
+        } else {
+            throw (new BookNotFoundException(name));
+        }
+    }
+
+
+    public Optional<Book> findAvailableBookByName(String name) {
+        List<MongoBook> retrievedBooks = bookRepository.findByNameAndIsBorrowedFalse(name);
+
+        if (!retrievedBooks.isEmpty()) {
+            return Optional.ofNullable(retrievedBooks.get(0).toDomain());
+        } else {
+            return Optional.empty();
+        }
+    }
+
 }

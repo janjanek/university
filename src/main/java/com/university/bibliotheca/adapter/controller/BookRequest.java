@@ -1,31 +1,59 @@
 package com.university.bibliotheca.adapter.controller;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.university.bibliotheca.adapter.BookDto;
 import com.university.bibliotheca.domain.model.Book;
+import org.jetbrains.annotations.NotNull;
 
 public class BookRequest {
     @JsonProperty(value = "id")
     private String id;
+    @NotNull
     @JsonProperty(value = "name")
     private String name;
+    @NotNull
     @JsonProperty(value = "author")
     private String author;
+    @JsonProperty(value = "isBorrowed")
+    private boolean isBorrowed = false;
+    @JsonProperty(value = "borrower")
+    private String borrower = null;
+    @JsonProperty(value = "borrowStart")
+    private String borrowStart = null;
+    @JsonProperty(value = "borrowEnd")
+    private String borrowEnd = null;
 
+//
+//    public BookRequest(String id, String name, String author) {
+//        this.id = id;
+//        this.name = name;
+//        this.author = author;
+//    }
 
-    public BookRequest(String id, String name, String author) {
+    public BookRequest(Book book) {
+        this.id = book.getId();
+        this.name = book.getName();
+        this.author = book.getAuthor();
+        this.isBorrowed = book.isBorrowed();
+        this.borrower = book.getBorrower();
+        if (book.getBorrowStart() != null) {
+            this.borrowStart = book.getBorrowStart().toString();
+        }
+        if (book.getBorrowEnd() != null) {
+            this.borrowEnd = book.getBorrowEnd().toString();
+        }
+    }
+
+    public BookRequest(String id, String name, String author, boolean isBorrowed, String borrower, String borrowStart, String borrowEnd) {
         this.id = id;
         this.name = name;
         this.author = author;
-    }
-
-    public BookRequest(BookDto bookDto){
-        this.id = bookDto.getId();
-        this.name = bookDto.getName();
-        this.author = bookDto.getAuthor();
+        this.isBorrowed = isBorrowed;
+        this.borrower = borrower;
+        this.borrowStart = borrowStart;
+        this.borrowEnd = borrowEnd;
     }
 
     public Book toDomain() {
-        return new Book(this.id, this.author, this.name);
+        return new Book(this.id, this.name, this.author);
     }
 }

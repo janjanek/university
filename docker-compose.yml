@@ -1,0 +1,15 @@
+version: '2'
+services:
+  message-server:
+    container_name: message-server
+    build:
+      context: docker-message-server
+      dockerfile: Dockerfile
+    image: message-server:latest
+    ports:
+      - 18888:8888
+    networks:
+      - spring-cloud-network
+networks:
+  spring-cloud-network:
+    driver: bridge

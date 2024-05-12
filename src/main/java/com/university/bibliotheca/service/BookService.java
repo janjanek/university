@@ -1,18 +1,22 @@
 package com.university.bibliotheca.service;
 
-import com.university.bibliotheca.adapter.BookDto;
-import com.university.bibliotheca.adapter.mongo.MongoBookAdapter;
 import com.university.bibliotheca.domain.model.Book;
+import com.university.bibliotheca.domain.ports.BookPort;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.time.Instant;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
 
 @Component
 public class BookService {
 
-    private MongoBookAdapter mongoBookAdapter;
+    private BookPort mongoBookAdapter;
 
     @Autowired
-    public BookService(MongoBookAdapter mongoBookAdapter){
+    public BookService(BookPort mongoBookAdapter){
         this.mongoBookAdapter = mongoBookAdapter;
     }
 
@@ -24,11 +28,22 @@ public class BookService {
        return mongoBookAdapter.findBook(id);
     }
 
-    public BookDto findBookDto(String id){
-        return mongoBookAdapter.findBook(id).toDto();
+    public List<Book> findAllBooks(){
+        return mongoBookAdapter.findAllBooks();
     }
 
-    public void testSaveBook(){
-        mongoBookAdapter.testSaveBook();
+    public List<Book> findBooksByName(String name){//TODO: Implement method
+        return mongoBookAdapter.findBooksByName(name);
     }
+
+    public Optional<Book> findAvailableBookByName(String name){
+        return mongoBookAdapter.findAvailableBookByName(name);
+    }
+
+    public void changeBorrowStatus(String bookId, boolean isBorrowed, String borrower, Date borrowEnd) {
+        Book retrievedBook = findBook(bookId);
+        Book changedStatusBook = new Book(retrievedBook.getId(), retrievedBook.getName(),  retrievedBook.getAuthor(), isBorrowed, borrower, Date.from(Instant.now()), borrowEnd);
+        saveBook(changedStatusBook);
+    }
+
 }
