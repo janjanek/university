@@ -4,8 +4,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.university.bibliotheca.domain.model.Book;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Date;
-
 public class BookRequest {
     @JsonProperty(value = "id")
     private String id;
@@ -20,9 +18,9 @@ public class BookRequest {
     @JsonProperty(value = "borrower")
     private String borrower = null;
     @JsonProperty(value = "borrowStart")
-    private Date borrowStart = null;
+    private String borrowStart = null;
     @JsonProperty(value = "borrowEnd")
-    private Date borrowEnd = null;
+    private String borrowEnd = null;
 
 //
 //    public BookRequest(String id, String name, String author) {
@@ -31,17 +29,21 @@ public class BookRequest {
 //        this.author = author;
 //    }
 
-    public BookRequest(Book book){
+    public BookRequest(Book book) {
         this.id = book.getId();
         this.name = book.getName();
         this.author = book.getAuthor();
         this.isBorrowed = book.isBorrowed();
         this.borrower = book.getBorrower();
-        this.borrowStart = book.getBorrowStart();
-        this.borrowEnd = book.getBorrowEnd();
+        if (book.getBorrowStart() != null) {
+            this.borrowStart = book.getBorrowStart().toString();
+        }
+        if (book.getBorrowEnd() != null) {
+            this.borrowEnd = book.getBorrowEnd().toString();
+        }
     }
 
-    public BookRequest(String id, String name, String author, boolean isBorrowed, String borrower, Date borrowStart, Date borrowEnd) {
+    public BookRequest(String id, String name, String author, boolean isBorrowed, String borrower, String borrowStart, String borrowEnd) {
         this.id = id;
         this.name = name;
         this.author = author;

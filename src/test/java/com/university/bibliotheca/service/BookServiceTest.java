@@ -49,7 +49,7 @@ public class BookServiceTest {
         mongoBookAdapter.saveBook(testBook);
 
         //when
-        String resultBookId = bookService.findAvailableBookByName(testBook.getName()).getId();
+        String resultBookId = bookService.findAvailableBookByName(testBook.getName()).map(Book::getId).orElse(null);
 
         //then
         Assertions.assertThat(resultBookId).isEqualTo(testBook.getId());

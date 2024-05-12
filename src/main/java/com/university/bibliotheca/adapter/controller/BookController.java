@@ -2,6 +2,7 @@ package com.university.bibliotheca.adapter.controller;
 
 import com.university.bibliotheca.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -38,13 +39,18 @@ public class BookController {
     }
 
     @GetMapping(path = "/find/all") // /books
-    public List<BookRequest> findAllBooks()  {
+    public List<BookRequest> findAllBooks() {
         return bookService.findAllBooks().stream().map(BookRequest::new).collect(Collectors.toList());
     }
 
     @GetMapping(path = "/findAvailable") // /books?available=true&name=nazwa
-    public BookRequest getAvailableBook(@RequestParam String name) {
-       return new BookRequest(bookService.findAvailableBookByName(name));
+    public ResponseEntity<BookRequest> getAvailableBook(@RequestParam String name) {
+        return bookService.findAvailableBookByName(name).map(optionalBook ->
+                ResponseEntity.ok().body(new BookRequest(optionalBook))
+        ).orElse(
+                ResponseEntity.notFound().build()
+        );
+
     }
 
 }

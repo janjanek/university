@@ -3,6 +3,7 @@ package com.university.bibliotheca.domain.ports;
 import com.university.bibliotheca.domain.model.Book;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface BookPort {
 
@@ -14,5 +15,5 @@ public interface BookPort {
 
     List<Book> findBooksByName(String name);
 
-    Book findAvailableBookByName(String name);
+    Optional<Book> findAvailableBookByName(String name);
 }

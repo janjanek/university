@@ -1,6 +1,5 @@
 package com.university.bibliotheca.adapter.mongo;
 
-import com.university.bibliotheca.adapter.mongo.exception.AvailableBookNotFoundException;
 import com.university.bibliotheca.adapter.mongo.exception.BookNotFoundException;
 import com.university.bibliotheca.domain.model.Book;
 import com.university.bibliotheca.domain.ports.BookPort;
@@ -9,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Log4j2
@@ -55,14 +55,13 @@ public class MongoBookAdapter implements BookPort {
     }
 
 
-    public Book findAvailableBookByName(String name) {
-        List<MongoBook> retrievedBooks = bookRepository.findByNameAndIsBorrowedFalse(name)
-                .orElseThrow(() -> new AvailableBookNotFoundException(name));
+    public Optional<Book> findAvailableBookByName(String name) {
+        List<MongoBook> retrievedBooks = bookRepository.findByNameAndIsBorrowedFalse(name);
 
         if (!retrievedBooks.isEmpty()) {
-            return retrievedBooks.get(0).toDomain();
+            return Optional.ofNullable(retrievedBooks.get(0).toDomain());
         } else {
-            throw (new AvailableBookNotFoundException(name));
+            return Optional.empty();
         }
     }
 

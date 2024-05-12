@@ -1,6 +1,5 @@
 package com.university.bibliotheca.service;
 
-import com.university.bibliotheca.adapter.mongo.exception.AvailableBookNotFoundException;
 import com.university.bibliotheca.adapter.mongo.exception.ReservationQueueNotFoundException;
 import com.university.bibliotheca.domain.model.Book;
 import com.university.bibliotheca.domain.model.BorrowResult;
@@ -19,6 +18,7 @@ import org.springframework.stereotype.Service;
 import java.time.Instant;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static java.time.temporal.ChronoUnit.DAYS;
@@ -47,24 +47,25 @@ public class ReservationService {
 //    wyciagnij z bazy ReservatoinQueue i dodaj nowa rezerwacje
 //    DONE.
     public BorrowResult borrowBook(String userId, String bookName, Date borrowEnd) {
-        try {
-            if (!isAlreadyBorrowed(userId, bookName)) {
-                Book bookToBorrow = bookService.findAvailableBookByName(bookName);
-                bookService.changeBorrowStatus(bookToBorrow.getId(), true, userId, borrowEnd);
+        if (!isAlreadyBorrowed(userId, bookName)) {
+            Optional<Book> bookToBorrow = bookService.findAvailableBookByName(bookName);
+            if (bookToBorrow.isPresent()) {
+                bookService.changeBorrowStatus(bookToBorrow.get().getId(), true, userId, borrowEnd);
 
-                userService.addBorrowToUser(userId, bookToBorrow.getId());
+                userService.addBorrowToUser(userId, bookToBorrow.get().getId());
                 return BorrowResult.BORROWED;
             } else {
-                return BorrowResult.ALREADY_BORROWED;
+                log.info("[ReservationService] Didn't borrow book for user: " + userId);
+                if (isAlreadyReserved(userId, bookName)) {
+                    log.info("[ReservationService] Book is already reserved!");
+                    return BorrowResult.ALREADY_RESERVED;
+                }
+                log.info("[ReservationService] User with id: " + userId + " - Making reservation for book: " + bookName);
+                reserveBook(userId, bookName);
+                return BorrowResult.RESERVED;
             }
-        } catch (AvailableBookNotFoundException e) {
-            log.info("[ReservationService] Didn't borrow book for user: " + userId + ", making reservation for book: " + bookName);
-            if (isAlreadyReserved(userId, bookName)) {
-                log.info("[ReservationService] Book is already reserved!");
-                return BorrowResult.ALREADY_RESERVED;
-            }
-            reserveBook(userId, bookName);
-            return BorrowResult.RESERVED;
+        } else {
+            return BorrowResult.ALREADY_BORROWED;
         }
     }
 
@@ -94,11 +95,12 @@ public class ReservationService {
             return SaveResult.SAVED;
         }
     }
+
     public ReservationQueue findReservationQueue(String bookName) {
         return mongoReservationQueueAdapter.findQueue(bookName);
     }
 
-    public List<ReservationQueue> findAllReservationQueues(){
+    public List<ReservationQueue> findAllReservationQueues() {
         return mongoReservationQueueAdapter.findAllReservationQueues().stream().map(reservationQueue -> new ReservationQueue(reservationQueue.getName(), sortReservations(reservationQueue.getUserReservations()))).collect(Collectors.toList());
     }
 
@@ -135,10 +137,10 @@ public class ReservationService {
 
     private void removeReservationFromQueue(ReservationQueue reservationQueue, Reservation reservation) {
         ReservationQueue updatedReservationQueue = removeReservation(reservationQueue, reservation);
-        if(!updatedReservationQueue.getUserReservations().isEmpty()){
+        if (!updatedReservationQueue.getUserReservations().isEmpty()) {
             mongoReservationQueueAdapter.saveReservationQueue(updatedReservationQueue);
         } else {
-          mongoReservationQueueAdapter.deleteReservationQueue(updatedReservationQueue.getName());
+            mongoReservationQueueAdapter.deleteReservationQueue(updatedReservationQueue.getName());
         }
     }
 

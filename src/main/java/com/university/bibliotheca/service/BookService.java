@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import java.time.Instant;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Component
 public class BookService {
@@ -35,7 +36,7 @@ public class BookService {
         return mongoBookAdapter.findBooksByName(name);
     }
 
-    public Book findAvailableBookByName(String name){
+    public Optional<Book> findAvailableBookByName(String name){
         return mongoBookAdapter.findAvailableBookByName(name);
     }
 
