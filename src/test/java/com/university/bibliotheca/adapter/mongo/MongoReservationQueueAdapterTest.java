@@ -1,7 +1,5 @@
-package com.university.bibliotheca.unit.adapter.mongo;
+package com.university.bibliotheca.adapter.mongo;
 
-import com.university.bibliotheca.adapter.mongo.MongoReservationQueueAdapter;
-import com.university.bibliotheca.adapter.mongo.ReservationQueueRepository;
 import com.university.bibliotheca.builders.ReservationBuilder;
 import com.university.bibliotheca.builders.ReservationQueueBuilder;
 import com.university.bibliotheca.domain.model.Reservation;

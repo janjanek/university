@@ -1,4 +1,4 @@
-package com.university.bibliotheca.unit.adapter.controller;
+package com.university.bibliotheca.adapter.controller;
 
 import com.university.bibliotheca.adapter.controller.ReservationController;
 import com.university.bibliotheca.adapter.mongo.BookRepository;
