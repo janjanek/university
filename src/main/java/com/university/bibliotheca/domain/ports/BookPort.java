@@ -10,6 +10,8 @@ public interface BookPort {
 
     Book findBook(String id);
 
+    List<Book> findAllBooks();
+
     List<Book> findBooksByName(String name);
 
     Book findAvailableBookByName(String name);

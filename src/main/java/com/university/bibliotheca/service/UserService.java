@@ -1,6 +1,5 @@
 package com.university.bibliotheca.service;
 
-import com.university.bibliotheca.adapter.UserDto;
 import com.university.bibliotheca.domain.model.User;
 import com.university.bibliotheca.domain.ports.UserPort;
 import com.university.bibliotheca.service.exception.BookAlreadyBorrowedException;
@@ -27,6 +26,10 @@ public class UserService {
 
     public User findUser(String id) {
         return mongoUserAdapter.findUser(id);
+    }
+
+    public List<User> findAllUsers(){
+        return mongoUserAdapter.findAllUsers();
     }
 
 
@@ -92,9 +95,5 @@ public class UserService {
         } else {
             throw (new BookNotBorrowedException(bookId));
         }
-    }
-
-    public UserDto findUserDto(String id) {
-        return mongoUserAdapter.findUserDto(id);
     }
 }

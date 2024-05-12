@@ -11,6 +11,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Log4j2
 @Component
@@ -29,6 +30,10 @@ public class MongoReservationQueueAdapter implements ReservationQueuePort {
         reservationQueueRepository.save(MongoReservationQueue.toMongoReservationQueue(reservationQueue));
     }
 
+    public void deleteReservationQueue(String bookName){
+        reservationQueueRepository.deleteById(bookName);
+    }
+
     @Nullable
     public ReservationQueue findQueue(String bookName) {
             return reservationQueueRepository
@@ -36,6 +41,13 @@ public class MongoReservationQueueAdapter implements ReservationQueuePort {
                     .orElseThrow(() -> new ReservationQueueNotFoundException(bookName))
                     .toDomain();
     }
+
+    @Nullable
+    public List<ReservationQueue> findAllReservationQueues() {
+        return reservationQueueRepository
+                .findAll().stream().map(MongoReservationQueue::toDomain).collect(Collectors.toList());
+    }
+
 
     @Nullable
     public Reservation findReservation(String bookName, String userId) {
@@ -54,30 +66,6 @@ public class MongoReservationQueueAdapter implements ReservationQueuePort {
 
     public boolean isQueuePresent(String bookName) {
         return reservationQueueRepository.findById(bookName).isPresent();
-    }
-
-    public Reservation findPriorityReservation(List<Reservation> reservations) {
-//TODO: Delete
-//        ReservationQueue reservationQueue = findQueue(bookName);
-//        List<Reservation> reservations = reservationQueue.getUserReservations();
-
-        //Returns Oldest Reservation
-        reservations.sort((o1, o2) -> {
-            if (o1.getReservationDate() == null || o2.getReservationDate() == null){
-                return 0;
-            } else
-            return o1.getReservationDate().compareTo(o2.getReservationDate());
-        });
-
-        //Returns Higest Priority Occupation
-        reservations.sort((o1, o2) -> {
-            if (o1.getOccupation() == null || o2.getOccupation() == null){
-                return 0;
-            } else
-                return o2.getOccupation().getNumVal().compareTo(o1.getOccupation().getNumVal());
-        });
-
-        return reservations.get(0);
     }
 
 }

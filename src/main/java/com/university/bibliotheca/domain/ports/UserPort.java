@@ -1,7 +1,8 @@
 package com.university.bibliotheca.domain.ports;
 
-import com.university.bibliotheca.adapter.UserDto;
 import com.university.bibliotheca.domain.model.User;
+
+import java.util.List;
 
 public interface UserPort {
 
@@ -9,5 +10,5 @@ public interface UserPort {
 
     User findUser(String id);
 
-    UserDto findUserDto(String id);
+    List<User> findAllUsers();
 }

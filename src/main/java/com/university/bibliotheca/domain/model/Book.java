@@ -1,6 +1,5 @@
 package com.university.bibliotheca.domain.model;
 
-import com.university.bibliotheca.adapter.BookDto;
 import lombok.Value;
 
 import java.util.Date;
@@ -45,18 +44,5 @@ public class Book {
         this.borrower = null;
         this.borrowStart = null;
         this.borrowEnd = null;
-    }
-
-
-    @Override
-    public String toString() {
-        return "BookDto{" +
-                "name='" + name + '\'' +
-                ", auhtor='" + author + '\'' +
-                '}';
-    }
-
-    public BookDto toDto(){
-        return new BookDto(id, name, author);
     }
 }

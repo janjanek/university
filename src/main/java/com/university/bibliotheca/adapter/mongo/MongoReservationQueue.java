@@ -9,7 +9,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
-
+//TODO: Wywalić kolekcjęReservationQueue, zostawić dokumenty Reservations i przy szukaniu priorytetowej rezerwacji, wyciągać dokumenty po bookName.
 @Document(collection = "Reservations")
 public class MongoReservationQueue {
     @Id
@@ -33,7 +33,7 @@ public class MongoReservationQueue {
         return new MongoReservationQueue(
                 reservationQueue.getName(),
                 reservationQueue.getUserReservations()
-                        .stream().map(userReservation -> MongoReservation.toMongoReservation(userReservation))
+                        .stream().map(MongoReservation::toMongoReservation)
                         .collect(Collectors.toList())
         );
     }
@@ -42,18 +42,18 @@ public class MongoReservationQueue {
 class MongoReservation {
 //    @Id
     private String userId;
-    private String bookName;
+    private String userName;
     private Occupation occupation;
     private Date reservationDate;
 
 
     public MongoReservation(
             String userId,
-            String bookName,
+            String userName,
             Occupation occupation,
             Date reservationDate) {
         this.userId = userId;
-        this.bookName = bookName;
+        this.userName = userName;
         this.occupation = occupation;
         this.reservationDate = reservationDate;
     }
@@ -66,12 +66,12 @@ class MongoReservation {
 //    }
 
     public Reservation toDomain() {
-        return new Reservation(this.userId, this.bookName, this.occupation, this.reservationDate);
+        return new Reservation(this.userId, this.userName, this.occupation, this.reservationDate);
     }
 
     public static MongoReservation toMongoReservation(Reservation reservation) {
         return new MongoReservation(reservation.getUserId(),
-                reservation.getBookName(),
+                reservation.getUserName(),
                 reservation.getOccupation(),
                 reservation.getReservationDate()
         );

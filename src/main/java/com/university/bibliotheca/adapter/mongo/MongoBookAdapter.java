@@ -37,6 +37,10 @@ public class MongoBookAdapter implements BookPort {
                 .toDomain();
     }
 
+    public List<Book> findAllBooks() {
+        return bookRepository.findAll().stream().map(mongoBook -> mongoBook.toDomain()).collect(Collectors.toList());
+    }
+
     public List<Book> findBooksByName(String name) {
         List<MongoBook> retrievedBooks = bookRepository.findByName(name)
                 .orElseThrow(() -> new BookNotFoundException(name));

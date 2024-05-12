@@ -27,6 +27,9 @@ public class BookService {
        return mongoBookAdapter.findBook(id);
     }
 
+    public List<Book> findAllBooks(){
+        return mongoBookAdapter.findAllBooks();
+    }
 
     public List<Book> findBooksByName(String name){//TODO: Implement method
         return mongoBookAdapter.findBooksByName(name);
