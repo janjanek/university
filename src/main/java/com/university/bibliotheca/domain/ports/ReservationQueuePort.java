@@ -4,6 +4,7 @@ import com.university.bibliotheca.domain.model.Reservation;
 import com.university.bibliotheca.domain.model.ReservationQueue;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ReservationQueuePort {
 
@@ -11,14 +12,11 @@ public interface ReservationQueuePort {
 
     void deleteReservationQueue(String bookName);
 
-    ReservationQueue findQueue(String bookName);
+    Optional<ReservationQueue> findQueue(String bookName);
 
     List<ReservationQueue> findAllReservationQueues();
 
 
-    Reservation findReservation(String bookName, String userId);
-
-    boolean isQueuePresent(String bookName);
-
+    Optional<Reservation> findReservation(String bookName, String userId);
 
 }

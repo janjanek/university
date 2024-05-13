@@ -4,11 +4,12 @@ import com.university.bibliotheca.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -27,20 +28,26 @@ public class UserController {
         this.userService = userService;
     }
 
-    @PostMapping(path = "/add")
+    @PutMapping(path = "/")
     public ResponseEntity<String> addUser(@RequestBody UserRequest userRequest) {
         userService.saveUser(userRequest.toDomain());
         return ResponseEntity.ok("Successfully saved user.");
     }
 
-    @GetMapping(path = "/find")
-    public UserRequest getUser(@RequestParam String id)  {
-       return new UserRequest(userService.findUser(id));
+    @GetMapping(path = "/{id}")
+    public UserRequest getUser(@PathVariable String id) {
+        return new UserRequest(userService.findUser(id));
     }
 
-    @GetMapping(path = "/find/all")
-    public List<UserRequest> findAllUsers()  {
+    @GetMapping(path = "/")
+    public List<UserRequest> findAllUsers() {
         return userService.findAllUsers().stream().map(UserRequest::new).collect(Collectors.toList());
+    }
+//TODO: Handle delete user to delete all his reservations and return all books
+    @DeleteMapping(path = "/{id}" )
+    public ResponseEntity<String> deleteUser(@PathVariable String id) {
+         userService.deleteUser(id);
+         return ResponseEntity.ok("Succsessfully deleted user");
     }
 
 }

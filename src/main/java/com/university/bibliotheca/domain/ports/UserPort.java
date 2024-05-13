@@ -11,4 +11,6 @@ public interface UserPort {
     User findUser(String id);
 
     List<User> findAllUsers();
+
+    void deleteUser(String id);
 }

@@ -11,6 +11,8 @@ public interface BookPort {
 
     Book findBook(String id);
 
+    void deleteBook(String id);
+
     List<Book> findAllBooks();
 
     List<Book> findBooksByName(String name);

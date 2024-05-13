@@ -25,6 +25,12 @@ public class UserRequest {
     private List<String> reservedBookNames;
 
 
+    public UserRequest(String id, String name, Occupation occupation) {
+        this.id = id;
+        this.name = name;
+        this.occupation = occupation;
+    }
+
     public UserRequest(User user) {
         this.id = user.getId();
         this.name = user.getName();

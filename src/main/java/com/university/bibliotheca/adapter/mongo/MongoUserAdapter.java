@@ -35,4 +35,7 @@ public class MongoUserAdapter implements UserPort {
         return userRepository.findAll().stream().map(mongoUser -> mongoUser.toDomain()).collect(Collectors.toList());
     }
 
+    public void deleteUser(String id){
+        userRepository.deleteById(id);
+    }
 }

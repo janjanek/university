@@ -2,7 +2,6 @@ package com.university.bibliotheca.adapter.controller;
 
 import com.university.bibliotheca.adapter.mongo.exception.AvailableBookNotFoundException;
 import com.university.bibliotheca.adapter.mongo.exception.BookNotFoundException;
-import com.university.bibliotheca.service.exception.ReservationNotFoundException;
 import com.university.bibliotheca.adapter.mongo.exception.ReservationQueueNotFoundException;
 import com.university.bibliotheca.adapter.mongo.exception.UserNotFoundException;
 import com.university.bibliotheca.service.exception.BookAlreadyBorrowedException;
@@ -22,7 +21,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Resource not found!");
     }
 
-    @ExceptionHandler({BookAlreadyBorrowedException.class, BookAlreadyReservedException.class, BookNotBorrowedException.class, BookNotReservedException.class, ReservationNotFoundException.class})
+    @ExceptionHandler({BookAlreadyBorrowedException.class, BookAlreadyReservedException.class, BookNotBorrowedException.class, BookNotReservedException.class })
     public ResponseEntity<String> handleServiceExceptions(Exception ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Resource not found!");
     }

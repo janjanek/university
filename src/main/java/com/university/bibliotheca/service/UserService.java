@@ -28,6 +28,10 @@ public class UserService {
         return mongoUserAdapter.findUser(id);
     }
 
+    public void deleteUser(String id) {
+        mongoUserAdapter.deleteUser(id);
+    }
+
     public List<User> findAllUsers(){
         return mongoUserAdapter.findAllUsers();
     }

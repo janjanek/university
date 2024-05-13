@@ -6,7 +6,7 @@ import com.university.bibliotheca.domain.model.Reservation;
 
 import java.util.Date;
 
-public class    ReservationRequest {
+public class ReservationRequest {
 
     @JsonProperty(value ="userName")
     String userName;
