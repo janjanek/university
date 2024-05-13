@@ -69,4 +69,8 @@ public class MongoBookAdapter implements BookPort {
         }
     }
 
+    public Optional<Book> findBorrowedBookForUser(String userId, String bookName){
+       return bookRepository.findByBorrowerAndName(userId, bookName).map(MongoBook::toDomain);
+    }
+
 }

@@ -45,6 +45,8 @@ public class ReservationServiceTest {
     private UserRepository userRepository;
     @Autowired
     private ReservationQueueRepository reservationQueueRepository;
+    @Autowired
+    private WaitingListService waitingListService;
 
 
 
@@ -57,6 +59,7 @@ public class ReservationServiceTest {
         mongoReservationQueueAdapter = new MongoReservationQueueAdapter(reservationQueueRepository);
 
         reservationService = new ReservationService(bookService, userService, mongoReservationQueueAdapter);
+        waitingListService = new WaitingListService(bookService, userService, reservationService);
     }
 
     @AfterEach()
@@ -77,7 +80,7 @@ public class ReservationServiceTest {
         userService.saveUser(testUser);
 
         //when
-        BorrowResult borrowResult = reservationService.borrowBook(testUser.getId(), testBook.getName(), Date.from(Instant.ofEpochSecond(1800000000))); //15 January 2027 08:00:00
+        BorrowResult borrowResult = waitingListService.borrowBook(testUser.getId(), testBook.getName(), Date.from(Instant.ofEpochSecond(1800000000))); //15 January 2027 08:00:00
 
         //then
         assertEquals(BorrowResult.BORROWED, borrowResult);
@@ -95,7 +98,7 @@ public class ReservationServiceTest {
         userService.saveUser(testUser);
 
         //when
-        BorrowResult borrowResult = reservationService.borrowBook(testUser.getId(), testBook.getName(), Date.from(Instant.ofEpochSecond(1800000000))); //15 January 2027 08:00:00
+        BorrowResult borrowResult = waitingListService.borrowBook(testUser.getId(), testBook.getName(), Date.from(Instant.ofEpochSecond(1800000000))); //15 January 2027 08:00:00
 
 
         //then
@@ -114,9 +117,9 @@ public class ReservationServiceTest {
         userService.saveUser(testUser);
 
         //when
-        reservationService.borrowBook(testUser.getId(), testBook.getName(), Date.from(Instant.ofEpochSecond(1800000000))); //15 January 2027 08:00:00
+        waitingListService.borrowBook(testUser.getId(), testBook.getName(), Date.from(Instant.ofEpochSecond(1800000000))); //15 January 2027 08:00:00
         //and
-        BorrowResult borrowResult = reservationService.borrowBook(testUser.getId(), testBook.getName(), Date.from(Instant.ofEpochSecond(1800000000))); //15 January 2027 08:00:00
+        BorrowResult borrowResult = waitingListService.borrowBook(testUser.getId(), testBook.getName(), Date.from(Instant.ofEpochSecond(1800000000))); //15 January 2027 08:00:00
 
         //then
         assertEquals(BorrowResult.ALREADY_RESERVED, borrowResult);
@@ -133,9 +136,9 @@ public class ReservationServiceTest {
         userService.saveUser(testUser);
 
         //when
-        reservationService.borrowBook(testUser.getId(), testBook.getName(), Date.from(Instant.ofEpochSecond(1800000000))); //15 January 2027 08:00:00
+        waitingListService.borrowBook(testUser.getId(), testBook.getName(), Date.from(Instant.ofEpochSecond(1800000000))); //15 January 2027 08:00:00
         //and
-        ReturnResult returnResult = reservationService.returnBook(testUser.getId(), testBook.getId());
+        ReturnResult returnResult = waitingListService.returnBook(testUser.getId(), testBook.getId());
 
         //then
         assertEquals(ReturnResult.RETURNED, returnResult);
@@ -153,14 +156,14 @@ public class ReservationServiceTest {
         userService.saveUser(testUser);
         userService.saveUser(anotherUser);
 
-        reservationService.borrowBook(testUser.getId(), testBook.getName(), Date.from(Instant.ofEpochSecond(1800000000))); //15 January 2027 08:00:00
-        reservationService.borrowBook(anotherUser.getId(), testBook.getName(), Date.from(Instant.ofEpochSecond(1800000000))); //15 January 2027 08:00:00
+        waitingListService.borrowBook(testUser.getId(), testBook.getName(), Date.from(Instant.ofEpochSecond(1800000000))); //15 January 2027 08:00:00
+        waitingListService.borrowBook(anotherUser.getId(), testBook.getName(), Date.from(Instant.ofEpochSecond(1800000000))); //15 January 2027 08:00:00
 
         //when
         ReturnResult returnResult = reservationService.returnBook(testUser.getId(), testBook.getId());
 
         //then
-        assertEquals(ReturnResult.RETURNED_AND_RESERVED, returnResult);
+        assertEquals(ReturnResult.RETURNED_AND_BORROWED, returnResult);
     }
 //
 //    @Test
@@ -177,13 +180,13 @@ public class ReservationServiceTest {
 //        userService.saveUser(diffUser);
 //
 //        //when
-//        reservationService.borrowBook(testUser.getId(), testBook.getName(), Date.from(Instant.ofEpochSecond(1800000000))); //15 January 2027 08:00:00
-//        reservationService.borrowBook(diffUser.getId(), testBook.getName(), Date.from(Instant.ofEpochSecond(1800000000)) );
+//        waitingListService.borrowBook(testUser.getId(), testBook.getName(), Date.from(Instant.ofEpochSecond(1800000000))); //15 January 2027 08:00:00
+//        waitingListService.borrowBook(diffUser.getId(), testBook.getName(), Date.from(Instant.ofEpochSecond(1800000000)) );
 //
 ////        reservationService.findPriorityReservation();
 //
 //        //and
-//        BorrowResult borrowResult = reservationService.borrowBook(testUser.getId(), testBook.getName(), Date.from(Instant.ofEpochSecond(1800000000))); //15 January 2027 08:00:00
+//        BorrowResult borrowResult = waitingListService.borrowBook(testUser.getId(), testBook.getName(), Date.from(Instant.ofEpochSecond(1800000000))); //15 January 2027 08:00:00
 //
 //        //then
 //        assertEquals("nie", "ha");

@@ -14,4 +14,6 @@ public interface BookRepository extends MongoRepository<MongoBook, String> {
 
     List<MongoBook> findByNameAndIsBorrowedFalse(String name);
 
+    Optional<MongoBook> findByBorrowerAndName(String userId, String bookName);
+
 }

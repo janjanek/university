@@ -48,6 +48,10 @@ public class BookService {
         return mongoBookAdapter.findAvailableBookByName(name);
     }
 
+    public Optional<Book> findBorrowedBookForUser(String userId, String bookName){
+        return mongoBookAdapter.findBorrowedBookForUser(userId, bookName);
+    }
+
     public void changeBorrowStatus(String bookId, boolean isBorrowed, String borrower, Date borrowStart, Date borrowEnd) {
         Book retrievedBook = findBook(bookId);
         Book changedStatusBook = new Book(retrievedBook.getId(), retrievedBook.getName(), retrievedBook.getAuthor(), isBorrowed, borrower, borrowStart, borrowEnd);

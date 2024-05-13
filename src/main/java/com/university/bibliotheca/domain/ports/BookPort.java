@@ -18,4 +18,6 @@ public interface BookPort {
     List<Book> findBooksByName(String name);
 
     Optional<Book> findAvailableBookByName(String name);
+
+    Optional<Book> findBorrowedBookForUser(String name, String bookName);
 }

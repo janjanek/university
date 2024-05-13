@@ -3,6 +3,7 @@ package com.university.bibliotheca.adapter.controller;
 import com.university.bibliotheca.adapter.mongo.exception.ReservationQueueNotFoundException;
 import com.university.bibliotheca.domain.model.BorrowResult;
 import com.university.bibliotheca.service.ReservationService;
+import com.university.bibliotheca.service.WaitingListService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -29,20 +30,23 @@ import static java.time.temporal.ChronoUnit.DAYS;
 public class ReservationController {
 
     private ReservationService reservationService;
+    private WaitingListService waitingListService;
 
     @Value("${borrow_days}")
     private int BORROW_DAYS;
 
     @Autowired
     public ReservationController(
-            ReservationService reservationService
+            ReservationService reservationService,
+            WaitingListService waitingListService
     ) {
         this.reservationService = reservationService;
+        this.waitingListService = waitingListService;
     }
 
     @PostMapping(path = "/")
     public ResponseEntity<String> addReservation(@RequestParam String userId, @RequestParam String bookName) {
-        BorrowResult status = reservationService.borrowBook(userId, bookName, Date.from(Instant.now().plus(BORROW_DAYS, DAYS)));
+        BorrowResult status = waitingListService.borrowBook(userId, bookName, Date.from(Instant.now().plus(BORROW_DAYS, DAYS)));
 
         return switch (status) {
             case BORROWED -> ResponseEntity.ok("Successfully borrowed book.");
