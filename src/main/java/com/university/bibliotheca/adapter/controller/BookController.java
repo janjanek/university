@@ -5,6 +5,7 @@ import com.university.bibliotheca.service.WaitingListService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,11 +19,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.stream.Collectors;
-
+//TODO: Idea - add billing, for late returning of book, service should bill amount of money, that User would be obligated to pay.
+//Also billing could be used for higher priority
 
 @RestController
 @RequestMapping("/books")
 @CrossOrigin("http://localhost:3000/")
+@Validated
 public class BookController {
     private BookService bookService;
     private WaitingListService waitingListService;
@@ -37,14 +40,16 @@ public class BookController {
     }
 
     @PutMapping(path = "/")
-    public ResponseEntity<String> addBook(@RequestBody BookRequest bookRequest){
-        HttpStatus status = waitingListService.addBook(bookRequest.toDomain()).getStatus();
-        return switch (status) {
-            case OK -> ResponseEntity.ok("Successfully created book.");
-            case CREATED -> ResponseEntity.status(status).body("Successfully created book, and gave it to the reservee");
-            default -> ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Unknown error occurred");
-        };
-    }
+    public ResponseEntity<String> addBook(@Validated @RequestBody BookRequest bookRequest) {
+
+            HttpStatus status = waitingListService.addBook(bookRequest.toDomain()).getStatus();
+            return switch (status) {
+                case OK -> ResponseEntity.ok("Successfully created book.");
+                case CREATED -> ResponseEntity.status(status).body("Successfully created book, and gave it to the reservee");
+                default -> ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Unknown error occurred");
+            };
+        }
+
 
     @PostMapping(path = "/return")
     public ResponseEntity<String> returnBook(@RequestParam String userId, @RequestParam String bookId) {

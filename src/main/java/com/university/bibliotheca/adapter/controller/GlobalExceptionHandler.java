@@ -13,6 +13,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import java.text.ParseException;
+
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -24,5 +26,10 @@ public class GlobalExceptionHandler {
     @ExceptionHandler({BookAlreadyBorrowedException.class, BookAlreadyReservedException.class, BookNotBorrowedException.class, BookNotReservedException.class })
     public ResponseEntity<String> handleServiceExceptions(Exception ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Resource not found!");
+    }
+
+    @ExceptionHandler({ParseException.class})
+    public ResponseEntity<String> handleParserException(Exception ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Data parsed incorrectly!");
     }
 }

@@ -7,11 +7,11 @@ import com.university.bibliotheca.service.exception.BookAlreadyReservedException
 import com.university.bibliotheca.service.exception.BookNotBorrowedException;
 import com.university.bibliotheca.service.exception.BookNotReservedException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Component
+@Service
 public class UserService {
     private UserPort mongoUserAdapter;
 
@@ -28,9 +28,14 @@ public class UserService {
         return mongoUserAdapter.findUser(id);
     }
 
-    public void deleteUser(String id) {
-        mongoUserAdapter.deleteUser(id);
-    }
+    public boolean deleteUser(String id) {
+        if(mongoUserAdapter.findUser(id).getBorrowedBookIds().isEmpty()) {
+            mongoUserAdapter.deleteUser(id);
+            return true;
+        } else {
+            return false;
+        }
+    }//TODO: obsluzyc usuniecie usera z wypozyczonymi ksiazkami
 
     public List<User> findAllUsers(){
         return mongoUserAdapter.findAllUsers();

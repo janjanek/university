@@ -30,7 +30,7 @@ public class MongoReservationQueueAdapter implements ReservationQueuePort {
         reservationQueueRepository.save(MongoReservationQueue.toMongoReservationQueue(reservationQueue));
     }
 
-    public void deleteReservationQueue(String bookName){
+    public void deleteReservationQueue(String bookName) {
         reservationQueueRepository.deleteById(bookName);
     }
 
@@ -48,7 +48,7 @@ public class MongoReservationQueueAdapter implements ReservationQueuePort {
 
     @Nullable
     public Optional<Reservation> findReservation(String bookName, String userId) {
-       return reservationQueueRepository.findById(bookName).flatMap(reservationQueue -> reservationQueue.toDomain().getUserReservations()
+        return reservationQueueRepository.findById(bookName).flatMap(reservationQueue -> reservationQueue.toDomain().getUserReservations()
                 .stream()
                 .filter(reservation -> userId.equals(reservation.getUserId()))
                 .findAny());

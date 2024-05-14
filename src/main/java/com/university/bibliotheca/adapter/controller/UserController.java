@@ -2,7 +2,9 @@ package com.university.bibliotheca.adapter.controller;
 
 import com.university.bibliotheca.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,6 +20,7 @@ import java.util.stream.Collectors;
 @RestController
 @CrossOrigin("http://localhost:3000/")
 @RequestMapping("/users")
+@Validated
 public class UserController {
     UserService userService;
 
@@ -46,8 +49,11 @@ public class UserController {
 //TODO: Handle delete user to delete all his reservations and return all books
     @DeleteMapping(path = "/{id}" )
     public ResponseEntity<String> deleteUser(@PathVariable String id) {
-         userService.deleteUser(id);
-         return ResponseEntity.ok("Succsessfully deleted user");
+        if(userService.deleteUser(id)) {
+            return ResponseEntity.ok("Succsessfully deleted user");
+        } else {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Can't delete user that hasn't returned all books.");
+        }
     }
 
 }
