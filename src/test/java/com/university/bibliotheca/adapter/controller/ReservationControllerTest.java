@@ -1,6 +1,5 @@
-package com.university.bibliotheca.unit.adapter.controller;
+package com.university.bibliotheca.adapter.controller;
 
-import com.university.bibliotheca.adapter.controller.ReservationController;
 import com.university.bibliotheca.adapter.mongo.BookRepository;
 import com.university.bibliotheca.adapter.mongo.MongoBookAdapter;
 import com.university.bibliotheca.adapter.mongo.MongoReservationQueueAdapter;
@@ -15,6 +14,7 @@ import com.university.bibliotheca.domain.model.User;
 import com.university.bibliotheca.service.BookService;
 import com.university.bibliotheca.service.ReservationService;
 import com.university.bibliotheca.service.UserService;
+import com.university.bibliotheca.service.WaitingListService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -50,6 +50,7 @@ public class ReservationControllerTest {
     private UserRepository userRepository;
     @Autowired
     private ReservationQueueRepository reservationQueueRepository;
+    private WaitingListService waitingListService;
 
 
 
@@ -62,6 +63,7 @@ public class ReservationControllerTest {
         mongoReservationQueueAdapter = new MongoReservationQueueAdapter(reservationQueueRepository);
 
         reservationService = new ReservationService(bookService, userService, mongoReservationQueueAdapter);
+        waitingListService = new WaitingListService(bookService, userService, reservationService);
     }
 
     @AfterEach()
@@ -82,7 +84,7 @@ public class ReservationControllerTest {
         userService.saveUser(testUser);
 
         //when
-        BorrowResult borrowResult = reservationService.borrowBook(testUser.getId(), testBook.getName(), Date.from(Instant.ofEpochSecond(1800000000))); //15 January 2027 08:00:00
+        BorrowResult borrowResult = waitingListService.borrowBook(testUser.getId(), testBook.getName(), Date.from(Instant.ofEpochSecond(1800000000))); //15 January 2027 08:00:00
 
         //then
         assertEquals(BorrowResult.BORROWED, borrowResult);
@@ -100,7 +102,7 @@ public class ReservationControllerTest {
         userService.saveUser(testUser);
 
         //when
-        BorrowResult borrowResult = reservationService.borrowBook(testUser.getId(), testBook.getName(), Date.from(Instant.ofEpochSecond(1800000000))); //15 January 2027 08:00:00
+        BorrowResult borrowResult = waitingListService.borrowBook(testUser.getId(), testBook.getName(), Date.from(Instant.ofEpochSecond(1800000000))); //15 January 2027 08:00:00
 
 
         //then
@@ -119,9 +121,9 @@ public class ReservationControllerTest {
         userService.saveUser(testUser);
 
         //when
-        reservationService.borrowBook(testUser.getId(), testBook.getName(), Date.from(Instant.ofEpochSecond(1800000000))); //15 January 2027 08:00:00
+        waitingListService.borrowBook(testUser.getId(), testBook.getName(), Date.from(Instant.ofEpochSecond(1800000000))); //15 January 2027 08:00:00
         //and
-        BorrowResult borrowResult = reservationService.borrowBook(testUser.getId(), testBook.getName(), Date.from(Instant.ofEpochSecond(1800000000))); //15 January 2027 08:00:00
+        BorrowResult borrowResult = waitingListService.borrowBook(testUser.getId(), testBook.getName(), Date.from(Instant.ofEpochSecond(1800000000))); //15 January 2027 08:00:00
 
         //then
         assertEquals(BorrowResult.ALREADY_RESERVED, borrowResult);

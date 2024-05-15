@@ -1,7 +1,5 @@
-package com.university.bibliotheca.unit.adapter.mongo;
+package com.university.bibliotheca.adapter.mongo;
 
-import com.university.bibliotheca.adapter.mongo.MongoReservationQueueAdapter;
-import com.university.bibliotheca.adapter.mongo.ReservationQueueRepository;
 import com.university.bibliotheca.builders.ReservationBuilder;
 import com.university.bibliotheca.builders.ReservationQueueBuilder;
 import com.university.bibliotheca.domain.model.Reservation;
@@ -14,8 +12,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-
-import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -42,7 +38,7 @@ public class MongoReservationQueueAdapterTest {
         mongoReservationQueueAdapter.saveReservationQueue(reservationQueue);
 
         //then
-        String savedReservationQueueName = Objects.requireNonNull(mongoReservationQueueAdapter.findQueue(reservationQueue.getName())).getName();
+        String savedReservationQueueName = mongoReservationQueueAdapter.findQueue(reservationQueue.getName()).get().getName();
 
         assertEquals(reservationQueue.getName(), savedReservationQueueName);
     }
@@ -58,7 +54,7 @@ public class MongoReservationQueueAdapterTest {
         mongoReservationQueueAdapter.saveReservationQueue(reservationQueue);
 
         //then
-        Reservation savedReservation = Objects.requireNonNull(mongoReservationQueueAdapter.findReservation(reservationQueue.getName(), reservation.getUserId()));
+        Reservation savedReservation = mongoReservationQueueAdapter.findReservation(reservationQueue.getName(), reservation.getUserId()).orElse(null);
 
         assertEquals(savedReservation, reservation);
     }

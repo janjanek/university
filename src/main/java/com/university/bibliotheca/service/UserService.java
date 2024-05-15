@@ -7,11 +7,11 @@ import com.university.bibliotheca.service.exception.BookAlreadyReservedException
 import com.university.bibliotheca.service.exception.BookNotBorrowedException;
 import com.university.bibliotheca.service.exception.BookNotReservedException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Component
+@Service
 public class UserService {
     private UserPort mongoUserAdapter;
 

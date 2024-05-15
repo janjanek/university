@@ -1,15 +1,10 @@
 package com.university.bibliotheca.service;
 
 import com.university.bibliotheca.adapter.mongo.exception.ReservationQueueNotFoundException;
-import com.university.bibliotheca.domain.model.Book;
-import com.university.bibliotheca.domain.model.BorrowResult;
 import com.university.bibliotheca.domain.model.Reservation;
 import com.university.bibliotheca.domain.model.ReservationQueue;
-import com.university.bibliotheca.domain.model.ReturnResult;
-import com.university.bibliotheca.domain.model.SaveResult;
 import com.university.bibliotheca.domain.model.User;
 import com.university.bibliotheca.domain.ports.ReservationQueuePort;
-import com.university.bibliotheca.service.exception.ReservationNotFoundException;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,13 +16,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static java.time.temporal.ChronoUnit.DAYS;
-
 @Log4j2
 @Service
 public class ReservationService {
 
-    private BookService bookService;
     private UserService userService;
 
     private ReservationQueuePort mongoReservationQueueAdapter;
@@ -36,67 +28,25 @@ public class ReservationService {
     private int BORROW_DAYS;
 
     @Autowired
-    public ReservationService(BookService bookService, UserService userService, ReservationQueuePort mongoReservationQueueAdapter) {
-        this.bookService = bookService;
+    public ReservationService(UserService userService, ReservationQueuePort mongoReservationQueueAdapter) {
         this.userService = userService;
         this.mongoReservationQueueAdapter = mongoReservationQueueAdapter;
     }
 
-    //1. zarezerwowanie pierwszej z brzegu książki
-//2. dorzucenie usera do listy rezerwowych danej książki
-//    wyciagnij z bazy ReservatoinQueue i dodaj nowa rezerwacje
-//    DONE.
-    public BorrowResult borrowBook(String userId, String bookName, Date borrowEnd) {
-        if (!isAlreadyBorrowed(userId, bookName)) {
-            Optional<Book> bookToBorrow = bookService.findAvailableBookByName(bookName);
-            if (bookToBorrow.isPresent()) {
-                bookService.changeBorrowStatus(bookToBorrow.get().getId(), true, userId, borrowEnd);
+    public boolean removeUserReservationFromQueue(String userId, String bookName) {
+        ReservationQueue reservationQueue = findReservationQueue(bookName).orElseThrow(
+                () -> new ReservationQueueNotFoundException(bookName));
+        Optional<Reservation> reservationOptional = reservationContainsUser(reservationQueue.getUserReservations(), userId);
 
-                userService.addBorrowToUser(userId, bookToBorrow.get().getId());
-                return BorrowResult.BORROWED;
-            } else {
-                log.info("[ReservationService] Didn't borrow book for user: " + userId);
-                if (isAlreadyReserved(userId, bookName)) {
-                    log.info("[ReservationService] Book is already reserved!");
-                    return BorrowResult.ALREADY_RESERVED;
-                }
-                log.info("[ReservationService] User with id: " + userId + " - Making reservation for book: " + bookName);
-                reserveBook(userId, bookName);
-                return BorrowResult.RESERVED;
-            }
+        if (reservationOptional.isPresent()) {
+            removeReservationFromQueueAndUser(reservationQueue, reservationOptional.get(), userId, bookName);
+            return true;
         } else {
-            return BorrowResult.ALREADY_BORROWED;
+            return false;
         }
     }
-
-    public ReturnResult returnBook(String userId, String bookId) {
-        Book returnedBook = bookService.findBook(bookId);
-        if (returnedBook.getBorrower() != null && returnedBook.getBorrower().equals(userId)) {
-            bookService.changeBorrowStatus(returnedBook.getId(), false, null, null);
-            userService.removeBorrowFromUser(userId, bookId);
-
-            try {
-                borrowReservedBook(returnedBook);
-                return ReturnResult.RETURNED_AND_RESERVED;
-            } catch (ReservationQueueNotFoundException | ReservationNotFoundException e) {
-                return ReturnResult.RETURNED;
-            }
-        } else {
-            return ReturnResult.NOT_OWNED;
-        }
-    }
-
-    public SaveResult addBook(Book book) {
-        bookService.saveBook(book);
-        try {
-            borrowReservedBook(book);
-            return SaveResult.SAVED_AND_BORROWED;
-        } catch (ReservationQueueNotFoundException e) {
-            return SaveResult.SAVED;
-        }
-    }
-
-    public ReservationQueue findReservationQueue(String bookName) {
+//hehehehe
+    public Optional<ReservationQueue> findReservationQueue(String bookName) {
         return mongoReservationQueueAdapter.findQueue(bookName);
     }
 
@@ -104,12 +54,13 @@ public class ReservationService {
         return mongoReservationQueueAdapter.findAllReservationQueues().stream().map(reservationQueue -> new ReservationQueue(reservationQueue.getName(), sortReservations(reservationQueue.getUserReservations()))).collect(Collectors.toList());
     }
 
-    private void reserveBook(String userId, String bookName) {
+    public void reserveBook(String userId, String bookName) {
         User retrievedUser = userService.findUser(userId);
         Reservation reservation = new Reservation(userId, retrievedUser.getName(), retrievedUser.getOccupation(), Date.from(Instant.now()));
 
-        if (isReservationQueuePresent(bookName)) {
-            ReservationQueue modifiedReservationQueue = addReservation(findReservationQueue(bookName), reservation);
+        Optional<ReservationQueue> optionalBookQueue = findReservationQueue(bookName);
+        if (optionalBookQueue.isPresent()) {
+            ReservationQueue modifiedReservationQueue = addReservation(optionalBookQueue.get(), reservation);
             saveReservationQueue(modifiedReservationQueue);
         } else {
             saveReservationQueue(new ReservationQueue(bookName, List.of(reservation)));
@@ -117,36 +68,14 @@ public class ReservationService {
         userService.addReservationToUser(retrievedUser, bookName);
     }
 
-    private void borrowReservedBook(Book returnedBook) {
-        ReservationQueue reservationQueue = mongoReservationQueueAdapter.findQueue(returnedBook.getName());
-
-        assert reservationQueue != null;
-        if (reservationQueue.getUserReservations() != null && !reservationQueue.getUserReservations().isEmpty()) {
-            Reservation priorityReservation = findPriorityReservation(reservationQueue.getUserReservations());
-
-            User priorityUser = userService.findUser(priorityReservation.getUserId());
-
-            removeReservationFromQueue(reservationQueue, priorityReservation);
-            userService.removeReservationFromUser(priorityUser, returnedBook.getName());
-
-            borrowBook(priorityUser.getId(), returnedBook.getName(), Date.from(Instant.now().plus(BORROW_DAYS, DAYS)));
-        } else {
-            throw (new ReservationQueueNotFoundException(returnedBook.getName()));
-        }
-    }
-
-    private void removeReservationFromQueue(ReservationQueue reservationQueue, Reservation reservation) {
-        ReservationQueue updatedReservationQueue = removeReservation(reservationQueue, reservation);
-        if (!updatedReservationQueue.getUserReservations().isEmpty()) {
-            mongoReservationQueueAdapter.saveReservationQueue(updatedReservationQueue);
-        } else {
-            mongoReservationQueueAdapter.deleteReservationQueue(updatedReservationQueue.getName());
-        }
-    }
-
-
-    private Reservation findPriorityReservation(List<Reservation> reservations) {
+    public Reservation findPriorityReservation(List<Reservation> reservations) {
         return sortReservations(reservations).get(0);
+    }
+
+    public void removeReservationFromQueueAndUser(ReservationQueue reservationQueue, Reservation reservation, String userId, String bookName){
+        removeReservationFromQueue(reservationQueue, reservation);
+        User user = userService.findUser(userId);
+        userService.removeReservationFromUser(user, bookName);
     }
 
     private List<Reservation> sortReservations(List<Reservation> reservations) {
@@ -169,29 +98,21 @@ public class ReservationService {
         return reservations;
     }
 
-    private boolean isAlreadyReserved(String userId, String bookName) {
-        Reservation retrievedReservation = mongoReservationQueueAdapter.findReservation(bookName, userId);
-        return (retrievedReservation != null);
+    private void removeReservationFromQueue(ReservationQueue reservationQueue, Reservation reservation) {
+        ReservationQueue updatedReservationQueue = removeReservation(reservationQueue, reservation);
+        if (!updatedReservationQueue.getUserReservations().isEmpty()) {
+            mongoReservationQueueAdapter.saveReservationQueue(updatedReservationQueue);
+        } else {
+            mongoReservationQueueAdapter.deleteReservationQueue(updatedReservationQueue.getName());
+        }
     }
 
-    private boolean isAlreadyBorrowed(String userId, String bookName) {
-        User retrievedUser = userService.findUser(userId);
-        if (retrievedUser.getBorrowedBookIds() == null) {
-            return false;
-        } else {
-            return userService.findUser(userId).getBorrowedBookIds().stream().map(bookId ->
-                    bookService.findBook(bookId).getName()
-            ).collect(Collectors.toList())
-                    .contains(bookName);
-        }
+    private Optional<Reservation> reservationContainsUser(List<Reservation> reservations, String userId) {
+        return reservations.stream().filter(reservation -> reservation.getUserId().equals(userId)).findAny();
     }
 
     private void saveReservationQueue(ReservationQueue reservationQueue) {
         mongoReservationQueueAdapter.saveReservationQueue(reservationQueue);
-    }
-
-    private boolean isReservationQueuePresent(String bookName) {
-        return mongoReservationQueueAdapter.isQueuePresent(bookName);
     }
 
     private ReservationQueue addReservation(ReservationQueue reservationQueue, Reservation reservation) {
@@ -204,7 +125,6 @@ public class ReservationService {
     private ReservationQueue removeReservation(ReservationQueue reservationQueue, Reservation reservation) {
         List<Reservation> reservations = reservationQueue.getUserReservations();
         reservations.remove(reservation);
-
         return new ReservationQueue(reservationQueue.getName(), reservations);
     }
 

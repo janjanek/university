@@ -4,7 +4,7 @@ import org.springframework.http.HttpStatus;
 
 public enum ReturnResult {
     RETURNED(HttpStatus.OK),
-    RETURNED_AND_RESERVED(HttpStatus.CREATED),
+    RETURNED_AND_BORROWED(HttpStatus.CREATED),
     NOT_OWNED(HttpStatus.CONFLICT);
 
     private HttpStatus status;

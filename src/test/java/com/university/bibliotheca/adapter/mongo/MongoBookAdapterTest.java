@@ -1,4 +1,4 @@
-package com.university.bibliotheca.unit.adapter.mongo;
+package com.university.bibliotheca.adapter.mongo;
 
 import com.university.bibliotheca.adapter.mongo.BookRepository;
 import com.university.bibliotheca.adapter.mongo.MongoBookAdapter;

@@ -37,6 +37,10 @@ public class MongoBookAdapter implements BookPort {
                 .toDomain();
     }
 
+    public void deleteBook(String id){
+        bookRepository.deleteById(id);
+    }
+
     public List<Book> findAllBooks() {
         return bookRepository.findAll().stream().map(mongoBook -> mongoBook.toDomain()).collect(Collectors.toList());
     }
@@ -63,6 +67,10 @@ public class MongoBookAdapter implements BookPort {
         } else {
             return Optional.empty();
         }
+    }
+
+    public Optional<Book> findBorrowedBookForUser(String userId, String bookName){
+       return bookRepository.findByBorrowerAndName(userId, bookName).map(MongoBook::toDomain);
     }
 
 }

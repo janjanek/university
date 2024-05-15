@@ -2,15 +2,16 @@ package com.university.bibliotheca.adapter.controller;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.university.bibliotheca.domain.model.Book;
-import org.jetbrains.annotations.NotNull;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 
 public class BookRequest {
     @JsonProperty(value = "id")
     private String id;
-    @NotNull
+    @NotBlank(message ="Name of book may not be empty.")
     @JsonProperty(value = "name")
     private String name;
-    @NotNull
+    @NotEmpty(message = "Author may not be empty.")
     @JsonProperty(value = "author")
     private String author;
     @JsonProperty(value = "isBorrowed")
@@ -21,13 +22,6 @@ public class BookRequest {
     private String borrowStart = null;
     @JsonProperty(value = "borrowEnd")
     private String borrowEnd = null;
-
-//
-//    public BookRequest(String id, String name, String author) {
-//        this.id = id;
-//        this.name = name;
-//        this.author = author;
-//    }
 
     public BookRequest(Book book) {
         this.id = book.getId();
@@ -54,6 +48,10 @@ public class BookRequest {
     }
 
     public Book toDomain() {
-        return new Book(this.id, this.name, this.author);
+        if(this.name != null){
+            return new Book(this.id, this.name, this.author);
+        } else{
+            return new Book(this.id, "", this.author);
+        }
     }
 }

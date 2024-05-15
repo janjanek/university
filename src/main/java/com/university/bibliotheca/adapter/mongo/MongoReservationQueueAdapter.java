@@ -1,6 +1,5 @@
 package com.university.bibliotheca.adapter.mongo;
 
-import com.university.bibliotheca.adapter.mongo.exception.ReservationQueueNotFoundException;
 import com.university.bibliotheca.domain.model.Reservation;
 import com.university.bibliotheca.domain.model.ReservationQueue;
 import com.university.bibliotheca.domain.ports.ReservationQueuePort;
@@ -11,6 +10,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Log4j2
@@ -30,16 +30,13 @@ public class MongoReservationQueueAdapter implements ReservationQueuePort {
         reservationQueueRepository.save(MongoReservationQueue.toMongoReservationQueue(reservationQueue));
     }
 
-    public void deleteReservationQueue(String bookName){
+    public void deleteReservationQueue(String bookName) {
         reservationQueueRepository.deleteById(bookName);
     }
 
     @Nullable
-    public ReservationQueue findQueue(String bookName) {
-            return reservationQueueRepository
-                    .findById(bookName)
-                    .orElseThrow(() -> new ReservationQueueNotFoundException(bookName))
-                    .toDomain();
+    public Optional<ReservationQueue> findQueue(String bookName) {
+        return reservationQueueRepository.findById(bookName).map(MongoReservationQueue::toDomain);
     }
 
     @Nullable
@@ -50,22 +47,11 @@ public class MongoReservationQueueAdapter implements ReservationQueuePort {
 
 
     @Nullable
-    public Reservation findReservation(String bookName, String userId) {
-        if (reservationQueueRepository.findById(bookName).isPresent()) {
-            return reservationQueueRepository.findById(bookName).get().toDomain().getUserReservations()
-                    .stream()
-                    .filter(reservation -> userId.equals(reservation.getUserId()))
-                    .findAny()
-                    .orElse(null);
-        } else {
-            log.info("[MongoReservationQueueAdapter] queue not found by bookName: " + bookName);
-            return null;
-        }
-    }
-
-
-    public boolean isQueuePresent(String bookName) {
-        return reservationQueueRepository.findById(bookName).isPresent();
+    public Optional<Reservation> findReservation(String bookName, String userId) {
+        return reservationQueueRepository.findById(bookName).flatMap(reservationQueue -> reservationQueue.toDomain().getUserReservations()
+                .stream()
+                .filter(reservation -> userId.equals(reservation.getUserId()))
+                .findAny());
     }
 
 }

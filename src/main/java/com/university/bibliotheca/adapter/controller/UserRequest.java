@@ -1,7 +1,6 @@
 package com.university.bibliotheca.adapter.controller;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.university.bibliotheca.adapter.UserDto;
 import com.university.bibliotheca.domain.model.Occupation;
 import com.university.bibliotheca.domain.model.User;
 import org.jetbrains.annotations.NotNull;
@@ -40,11 +39,6 @@ public class UserRequest {
         this.reservedBookNames = user.getReservedBookNames();
     }
 
-    public UserRequest(UserDto userDto){
-        this.id = userDto.getId();
-        this.name = userDto.getName();
-        this.occupation = userDto.getOccupation();
-    }
 
     public User toDomain(){
         return new User(this.id, this.name, this.occupation, emptyList(), emptyList());
