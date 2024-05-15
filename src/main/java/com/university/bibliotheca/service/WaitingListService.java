@@ -8,6 +8,7 @@ import com.university.bibliotheca.domain.model.ReturnResult;
 import com.university.bibliotheca.domain.model.SaveResult;
 import com.university.bibliotheca.domain.model.User;
 import com.university.bibliotheca.domain.ports.ReservationQueuePort;
+import com.university.bibliotheca.domain.ports.UserPort;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -29,17 +30,19 @@ public class WaitingListService {
     private ReservationService reservationService;
 
     private ReservationQueuePort mongoReservationQueueAdapter;
+    private UserPort mongoUserAdapter;
 
 
     @Value("${borrow_days}")
     private int BORROW_DAYS;
 
     @Autowired
-    public WaitingListService(BookService bookService, UserService userService, ReservationService reservationService, ReservationQueuePort mongoReservationQueueAdapter) {
+    public WaitingListService(BookService bookService, UserService userService, ReservationService reservationService, ReservationQueuePort mongoReservationQueueAdapter, UserPort mongoUserAdapter) {
         this.bookService = bookService;
         this.userService = userService;
         this.reservationService = reservationService;
         this.mongoReservationQueueAdapter = mongoReservationQueueAdapter;
+        this.mongoUserAdapter = mongoUserAdapter;
     }
 
     public BorrowResult borrowBook(String userId, String bookName, Date borrowEnd) {
@@ -91,6 +94,18 @@ public class WaitingListService {
         }
     }
 
+    public boolean deleteUser(String userId) {
+        User user = mongoUserAdapter.findUser(userId);
+        if(user.getBorrowedBookIds().isEmpty()) {
+            user.getReservedBookNames().forEach(it ->
+                    reservationService.removeUserReservationFromQueue(userId, it)
+            );
+            mongoUserAdapter.deleteUser(userId);
+            return true;
+        } else {
+            return false;
+        }
+    }
 
     private boolean borrowReservedBook(Book returnedBook) {
         Optional<ReservationQueue> reservationQueueOptional = mongoReservationQueueAdapter.findQueue(returnedBook.getName());

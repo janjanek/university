@@ -28,15 +28,6 @@ public class UserService {
         return mongoUserAdapter.findUser(id);
     }
 
-    public boolean deleteUser(String id) {
-        if(mongoUserAdapter.findUser(id).getBorrowedBookIds().isEmpty()) {
-            mongoUserAdapter.deleteUser(id);
-            return true;
-        } else {
-            return false;
-        }
-    }//TODO: obsluzyc usuniecie usera z wypozyczonymi ksiazkami
-
     public List<User> findAllUsers(){
         return mongoUserAdapter.findAllUsers();
     }

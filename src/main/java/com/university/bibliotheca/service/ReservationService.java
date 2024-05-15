@@ -20,7 +20,6 @@ import java.util.stream.Collectors;
 @Service
 public class ReservationService {
 
-    private BookService bookService;
     private UserService userService;
 
     private ReservationQueuePort mongoReservationQueueAdapter;
@@ -29,8 +28,7 @@ public class ReservationService {
     private int BORROW_DAYS;
 
     @Autowired
-    public ReservationService(BookService bookService, UserService userService, ReservationQueuePort mongoReservationQueueAdapter) {
-        this.bookService = bookService;
+    public ReservationService(UserService userService, ReservationQueuePort mongoReservationQueueAdapter) {
         this.userService = userService;
         this.mongoReservationQueueAdapter = mongoReservationQueueAdapter;
     }

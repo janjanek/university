@@ -1,6 +1,7 @@
 package com.university.bibliotheca.adapter.controller;
 
 import com.university.bibliotheca.service.UserService;
+import com.university.bibliotheca.service.WaitingListService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,12 +24,15 @@ import java.util.stream.Collectors;
 @Validated
 public class UserController {
     UserService userService;
+    WaitingListService waitingListService;
 
     @Autowired
     public UserController(
-            UserService userService
+            UserService userService,
+            WaitingListService waitingListService
     ) {
         this.userService = userService;
+        this.waitingListService = waitingListService;
     }
 
     @PutMapping(path = "/")
@@ -49,7 +53,7 @@ public class UserController {
 //TODO: Handle delete user to delete all his reservations and return all books
     @DeleteMapping(path = "/{id}" )
     public ResponseEntity<String> deleteUser(@PathVariable String id) {
-        if(userService.deleteUser(id)) {
+        if(waitingListService.deleteUser(id)) {
             return ResponseEntity.ok("Succsessfully deleted user");
         } else {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Can't delete user that hasn't returned all books.");
