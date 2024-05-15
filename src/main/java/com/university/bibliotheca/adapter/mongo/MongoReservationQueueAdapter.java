@@ -5,7 +5,6 @@ import com.university.bibliotheca.domain.model.ReservationQueue;
 import com.university.bibliotheca.domain.ports.ReservationQueuePort;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 
@@ -17,9 +16,6 @@ import java.util.stream.Collectors;
 @Component
 public class MongoReservationQueueAdapter implements ReservationQueuePort {
     private ReservationQueueRepository reservationQueueRepository;
-
-    @Autowired
-    MongoTemplate mongoTemplate;
 
     @Autowired
     public MongoReservationQueueAdapter(ReservationQueueRepository reservationQueueRepository) {

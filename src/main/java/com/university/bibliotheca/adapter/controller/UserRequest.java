@@ -20,7 +20,7 @@ public class UserRequest {
     private Occupation occupation;
 
     @JsonProperty(value = "borrowedBookIds")
-    private List<String> borrowedBookIds; // Potrzebne do wypisania pozyczonych ksiazek uzytkownika
+    private List<String> borrowedBookIds;
     @JsonProperty(value = "reservedBookNames")
     private List<String> reservedBookNames;
 

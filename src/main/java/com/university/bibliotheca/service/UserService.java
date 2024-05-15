@@ -53,7 +53,7 @@ public class UserService {
         User user = findUser(userId);
         List<String> borrowedBookIds = user.getBorrowedBookIds();
         if (borrowedBookIds != null) {
-            if (!borrowedBookIds.contains(bookId)) {//TODO Investigate this exception.
+            if (!borrowedBookIds.contains(bookId)) {
                 borrowedBookIds.add(bookId);
                 User updatedUser = new User(user.getId(), user.getName(), user.getOccupation(), borrowedBookIds, user.getReservedBookNames());
                 mongoUserAdapter.saveUser(updatedUser);

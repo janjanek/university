@@ -22,9 +22,6 @@ public class MongoBookAdapter implements BookPort {
         this.bookRepository = bookRepository;
     }
 
-//    MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017");
-
-
     public void saveBook(Book book) {
         MongoBook mongoBook = new MongoBook(book.getId(), book.getName(), book.getAuthor(), book.isBorrowed(), book.getBorrower(), book.getBorrowStart(), book.getBorrowEnd());
 
