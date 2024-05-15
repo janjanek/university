@@ -1,6 +1,9 @@
 package com.university.bibliotheca.adapter.controller;
 
+import com.university.bibliotheca.domain.model.Book;
+import com.university.bibliotheca.domain.model.User;
 import com.university.bibliotheca.service.BookService;
+import com.university.bibliotheca.service.UserService;
 import com.university.bibliotheca.service.WaitingListService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,8 +22,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.stream.Collectors;
-//TODO: Idea - add billing, for late returning of book, service should bill amount of money, that User would be obligated to pay.
-//Also billing could be used for higher priority
 
 @RestController
 @RequestMapping("/books")
@@ -28,27 +29,30 @@ import java.util.stream.Collectors;
 @Validated
 public class BookController {
     private BookService bookService;
+    private UserService userService;
     private WaitingListService waitingListService;
 
     @Autowired
     public BookController(
             BookService bookService,
+            UserService userService,
             WaitingListService waitingListService
     ) {
         this.bookService = bookService;
+        this.userService = userService;
         this.waitingListService = waitingListService;
     }
 
     @PutMapping(path = "/")
     public ResponseEntity<String> addBook(@Validated @RequestBody BookRequest bookRequest) {
 
-            HttpStatus status = waitingListService.addBook(bookRequest.toDomain()).getStatus();
-            return switch (status) {
-                case OK -> ResponseEntity.ok("Successfully created book.");
-                case CREATED -> ResponseEntity.status(status).body("Successfully created book, and gave it to the reservee");
-                default -> ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Unknown error occurred");
-            };
-        }
+        HttpStatus status = waitingListService.addBook(bookRequest.toDomain()).getStatus();
+        return switch (status) {
+            case OK -> ResponseEntity.ok("Successfully created book.");
+            case CREATED -> ResponseEntity.status(status).body("Successfully created book, and gave it to the reservee");
+            default -> ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Unknown error occurred");
+        };
+    }
 
 
     @PostMapping(path = "/return")
@@ -65,7 +69,11 @@ public class BookController {
 
     @GetMapping(path = "/{id}")
     public BookRequest getBook(@PathVariable String id) {
-        return new BookRequest(bookService.findBook(id));
+        Book book = bookService.findBook(id);
+        if (book.getBorrower() != null) {
+            return new BookRequest(book, userService.findUser(book.getBorrower()).getName());
+        }
+        return new BookRequest(book);
     }
 
     @GetMapping(path = "/name/{name}")
@@ -75,7 +83,15 @@ public class BookController {
 
     @GetMapping(path = "/")
     public List<BookRequest> getAllBooks() {
-        return bookService.findAllBooks().stream().map(BookRequest::new).collect(Collectors.toList());
+        List<Book> books = bookService.findAllBooks();
+        return books.stream().map(book -> {
+                    if (book.getBorrower() != null) {
+                        User user = userService.findUser(book.getBorrower());
+                        return new BookRequest(book, user.getName());
+                    }
+                    return new BookRequest(book);
+                }
+        ).collect(Collectors.toList());
     }
 
     @GetMapping(path = "/available/{name}")
@@ -89,7 +105,7 @@ public class BookController {
 
     @DeleteMapping(path = "/{id}")
     public ResponseEntity<String> deleteBook(@PathVariable String id) {
-        if( bookService.deleteBook(id)){
+        if (bookService.deleteBook(id)) {
             return ResponseEntity.ok("Succsesfully deleted book!");
         } else {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Book is borrowed, thus cannot be deleted!");

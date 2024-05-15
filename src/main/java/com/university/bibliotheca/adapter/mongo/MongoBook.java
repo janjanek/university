@@ -8,7 +8,6 @@ import java.util.Date;
 
 @Document(collection = "Books")
 public class MongoBook {
-//    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     private String id;
     private String name;
@@ -29,15 +28,6 @@ public class MongoBook {
         this.borrowStart = borrowStart;
         this.borrowEnd = borrowEnd;
     }
-//
-//    public MongoBook(String name, String author, boolean isBorrowed, String borrower, Date borrowStart, Date borrowEnd) {
-//        this.name = name;
-//        this.author = author;
-//        this.isBorrowed = isBorrowed;
-//        this.borrower = borrower;
-//        this.borrowStart = borrowStart;
-//        this.borrowEnd = borrowEnd;
-//    }
 
     public Book toDomain(){
         return new Book(this.id, this.name, this.author, this.isBorrowed, this.borrower, this.borrowStart, this.borrowEnd);

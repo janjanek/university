@@ -16,7 +16,7 @@ public class Book {
     Date borrowEnd;
 
 
-    public Book(String id, String name, String author, boolean isBorrowed, String borrower ,Date borrowStart, Date borrowEnd) {
+    public Book(String id, String name, String author, boolean isBorrowed, String borrower, Date borrowStart, Date borrowEnd) {
         this.id = id;
         this.name = name;
         this.author = author;

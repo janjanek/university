@@ -9,7 +9,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
-//TODO: Wywalić kolekcjęReservationQueue, zostawić dokumenty Reservations i przy szukaniu priorytetowej rezerwacji, wyciągać dokumenty po bookName.
 @Document(collection = "Reservations")
 public class MongoReservationQueue {
     @Id
@@ -40,7 +39,6 @@ public class MongoReservationQueue {
 }
 
 class MongoReservation {
-//    @Id
     private String userId;
     private String userName;
     private Occupation occupation;
@@ -57,13 +55,6 @@ class MongoReservation {
         this.occupation = occupation;
         this.reservationDate = reservationDate;
     }
-
-//    public MongoReservation(Reservation reservation) {
-//        this.userId = reservation.getUserId();
-//        this.bookName = reservation.getBookName();
-//        this.occupation = reservation.getOccupation();
-//        this.reservationDate = reservation.getReservationDate();
-//    }
 
     public Reservation toDomain() {
         return new Reservation(this.userId, this.userName, this.occupation, this.reservationDate);

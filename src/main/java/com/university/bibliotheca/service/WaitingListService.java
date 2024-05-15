@@ -1,5 +1,6 @@
 package com.university.bibliotheca.service;
 
+import com.university.bibliotheca.adapter.controller.BookRequest;
 import com.university.bibliotheca.domain.model.Book;
 import com.university.bibliotheca.domain.model.BorrowResult;
 import com.university.bibliotheca.domain.model.Reservation;
@@ -16,7 +17,9 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static java.time.temporal.ChronoUnit.DAYS;
 
@@ -94,6 +97,18 @@ public class WaitingListService {
         }
     }
 
+    public List<Book> findAllBooks() {
+        List<Book> books = bookService .findAllBooks();
+        List<BookRequest> bookRequests = books.stream().map(book -> {
+            if(!book.getBorrower().isEmpty()) {
+                User user = userService.findUser(book.getBorrower());
+                new BookRequest(book, user.getName());
+            }
+                return new BookRequest(book);
+                }
+        ).collect(Collectors.toList());
+        return books;
+    }
     public boolean deleteUser(String userId) {
         User user = mongoUserAdapter.findUser(userId);
         if(user.getBorrowedBookIds().isEmpty()) {

@@ -50,7 +50,7 @@ public class UserController {
     public List<UserRequest> findAllUsers() {
         return userService.findAllUsers().stream().map(UserRequest::new).collect(Collectors.toList());
     }
-//TODO: Handle delete user to delete all his reservations and return all books
+
     @DeleteMapping(path = "/{id}" )
     public ResponseEntity<String> deleteUser(@PathVariable String id) {
         if(waitingListService.deleteUser(id)) {
