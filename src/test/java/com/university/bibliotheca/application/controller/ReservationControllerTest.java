@@ -1,11 +1,5 @@
 package com.university.bibliotheca.application.controller;
 
-import com.university.bibliotheca.infrastructure.adapter.mongo.BookRepository;
-import com.university.bibliotheca.infrastructure.adapter.mongo.MongoBookAdapter;
-import com.university.bibliotheca.infrastructure.adapter.mongo.MongoReservationQueueAdapter;
-import com.university.bibliotheca.infrastructure.adapter.mongo.MongoUserAdapter;
-import com.university.bibliotheca.infrastructure.adapter.mongo.ReservationQueueRepository;
-import com.university.bibliotheca.infrastructure.adapter.mongo.UserRepository;
 import com.university.bibliotheca.builders.BookBuilder;
 import com.university.bibliotheca.builders.UserBuilder;
 import com.university.bibliotheca.domain.model.Book;
@@ -15,6 +9,12 @@ import com.university.bibliotheca.domain.service.BookService;
 import com.university.bibliotheca.domain.service.ReservationService;
 import com.university.bibliotheca.domain.service.UserService;
 import com.university.bibliotheca.domain.service.WaitingListService;
+import com.university.bibliotheca.infrastructure.adapter.mongo.BookRepository;
+import com.university.bibliotheca.infrastructure.adapter.mongo.MongoBookAdapter;
+import com.university.bibliotheca.infrastructure.adapter.mongo.MongoReservationQueueAdapter;
+import com.university.bibliotheca.infrastructure.adapter.mongo.MongoUserAdapter;
+import com.university.bibliotheca.infrastructure.adapter.mongo.ReservationQueueRepository;
+import com.university.bibliotheca.infrastructure.adapter.mongo.UserRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
