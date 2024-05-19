@@ -17,9 +17,9 @@ public class MongoConfig extends AbstractMongoClientConfiguration {
     @Value("${properties.mongo.database.name}")
     private String dataBaseName;
     @Value("${properties.mongo.database.admin.login}")
-    String username = "your_username";
+    String username = "";
     @Value("${properties.mongo.database.admin.password}")
-    String password = "your_password";
+    String password = "";
 
     @Override
     protected String getDatabaseName() {

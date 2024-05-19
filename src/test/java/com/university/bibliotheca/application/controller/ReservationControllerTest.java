@@ -27,6 +27,9 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.time.Instant;
 import java.util.Date;
@@ -59,6 +62,20 @@ public class ReservationControllerTest {
 
     @Autowired
     private TestRestTemplate restTemplate;
+
+    @Value("${custom.security.username}")
+    String username;
+    @Value("${custom.security.password}")
+    String password;
+
+    public HttpHeaders initializeHeaders(){
+            String auth = username + ":" + password;
+    byte[] encodedAuth = java.util.Base64.getEncoder().encode(auth.getBytes(java.nio.charset.StandardCharsets.US_ASCII));
+    HttpHeaders headers = new org.springframework.http.HttpHeaders();
+    String authHeader = "Basic " + new String(encodedAuth);
+    headers.add("Authorization", authHeader);
+    return headers;
+    }
 
 
     @LocalServerPort
@@ -153,7 +170,9 @@ public class ReservationControllerTest {
         //given
         Book testBook = BookBuilder.build();
         User testUser = UserBuilder.build();
+        HttpHeaders headers = initializeHeaders();
 
+        System.out.println(username + password);
         bookService.saveBook(testBook);
         userService.saveUser(testUser);
 
@@ -169,7 +188,8 @@ public class ReservationControllerTest {
         //and
         ResponseEntity<String> returnResult = restTemplate.postForEntity(
                 "http://localhost:" + port + "/books/return?userId=" + testUser.getId() + "&bookId=" + testBook.getId(),
-                null,
+
+                new HttpEntity<>(null, headers),
                 String.class
         );
 
